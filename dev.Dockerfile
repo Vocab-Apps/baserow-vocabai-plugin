@@ -18,6 +18,14 @@ RUN groupmod -g $PLUGIN_BUILD_GID baserow_docker_group && usermod -u $PLUGIN_BUI
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/dev.txt /tmp/plugin-dev-requirements.txt
 RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt
 
+# install cloudlanguagetools dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends wget
+RUN . /baserow/venv/bin/activate && pip3 install clt_spacy==0.1
+RUN . /baserow/venv/bin/activate && pip3 install clt_argostranslate==0.4
+RUN . /baserow/venv/bin/activate && pip3 install clt_wenlin==0.7
+RUN . /baserow/venv/bin/activate && pip3 install clt_requirements==0.1
+RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==2.0
+
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/ $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/
 RUN /baserow/plugins/install_plugin.sh --folder $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin --dev
 
