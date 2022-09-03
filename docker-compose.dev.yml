@@ -21,6 +21,7 @@ services:
       - "443:443"
     environment:
       BASEROW_PUBLIC_URL: http://dev-1.vocab.ai
+      CLOUDLANGUAGETOOLS_CORE_KEY: ${CLOUDLANGUAGETOOLS_CORE_KEY}
     volumes:
       - baserow_data:/baserow/data
       - ./plugins/baserow_vocabai_plugin/backend:/baserow/data/plugins/baserow_vocabai_plugin/backend
