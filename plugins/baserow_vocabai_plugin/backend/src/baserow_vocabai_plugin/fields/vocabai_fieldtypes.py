@@ -8,12 +8,12 @@ from baserow.contrib.database.fields.registries import FieldType
 from baserow.contrib.database.fields.models import Field
 from baserow.contrib.database.views.handler import ViewHandler
 
-from .dependencies.models import FieldDependency
+from baserow.contrib.database.fields.dependencies.models import FieldDependency
 
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField
 
-from .tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
-from baserow.contrib.database.cloudlanguagetools import instance as clt_instance
+from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
+from ..cloudlanguagetools import instance as clt_instance
 
 import logging
 logger = logging.getLogger(__name__)
