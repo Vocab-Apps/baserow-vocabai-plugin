@@ -199,12 +199,11 @@ def run_clt_lookup_many_rows(self, lookup_id, table_id, row_id_list, source_fiel
 # retrieving language data
 # ========================
 
-#@app.on_after_configure.connect
 @app.on_after_finalize.connect
 def setup_periodic_tasks(sender, **kwargs):
     logger.info('setup_periodic_tasks')
     
-    # run every 30s
+    # run every 30s (debug only)
     # period = 30
     period = 3600 * 3
     sender.add_periodic_task(period, refresh_cloudlanguagetools_language_data.s(), name='cloudlanguagetools language data')
@@ -213,13 +212,8 @@ def setup_periodic_tasks(sender, **kwargs):
     refresh_cloudlanguagetools_language_data.delay()
 
 
-# noinspection PyUnusedLocal
-@app.task(
-    bind=True,
-    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
-    time_limit=EXPORT_TIME_LIMIT,
-)
-def refresh_cloudlanguagetools_language_data(self):
+@app.task()
+def refresh_cloudlanguagetools_language_data():
     logger.info('refresh_cloudlanguagetools_language_data')
     manager = clt_instance.get_servicemanager()
     language_data = manager.get_language_data_json()

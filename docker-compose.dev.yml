@@ -22,6 +22,9 @@ services:
     environment:
       BASEROW_PUBLIC_URL: http://dev-1.vocab.ai
       CLOUDLANGUAGETOOLS_CORE_KEY: ${CLOUDLANGUAGETOOLS_CORE_KEY}
+      BASEROW_BACKEND_LOG_LEVEL: INFO
+      BASEROW_CELERY_BEAT_DEBUG_LEVEL: INFO
+      BASEROW_CELERY_WORKER_STARTUP_COMMAND: celery-worker
     volumes:
       - baserow_data:/baserow/data
       - ./plugins/baserow_vocabai_plugin/backend:/baserow/data/plugins/baserow_vocabai_plugin/backend
