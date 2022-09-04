@@ -1,6 +1,9 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import permission_classes as method_permission_classes
+from drf_spectacular.openapi import OpenApiParameter, OpenApiTypes
 from baserow.contrib.database.api.tokens.authentications import TokenAuthentication
 import logging
 
