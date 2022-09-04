@@ -58,6 +58,11 @@ import fieldSubForm from '@baserow/modules/database/mixins/fieldSubForm'
 export default {
   name: 'VocabAiTranslationSubForm',
   mixins: [form, fieldSubForm],
+  created() {
+    if (this.$store.getters['cloudlanguagetools/allLanguages'].length == 0) {
+      this.$store.dispatch('cloudlanguagetools/fetchAll', '', { root: true });
+    }
+  },  
   data() {
     return {
       allowedValues: ['source_field_id', 'target_language', 'service'],

@@ -30,7 +30,9 @@ export default {
   mixins: [form, fieldSubForm],
   created() {
     console.log('VocabAiLanguageTextSubForm created');
-    this.$store.dispatch('cloudlanguagetools/fetchAll', '', { root: true });
+    if (this.$store.getters['cloudlanguagetools/allLanguages'].length == 0) {
+      this.$store.dispatch('cloudlanguagetools/fetchAll', '', { root: true });
+    }
   },
   data() {
     return {
@@ -43,8 +45,6 @@ export default {
   computed: {
     languageList() {
       console.log("computed: languageList");
-      // this.$store.dispatch('cloudlanguagetools/fetchAll', '', { root: true });
-      // console.log("finished cloudlanguagetools/fetchAll");
       const allLanguages = this.$store.getters['cloudlanguagetools/allLanguages'];
       console.log("allLanguages: ", allLanguages);
       return allLanguages;

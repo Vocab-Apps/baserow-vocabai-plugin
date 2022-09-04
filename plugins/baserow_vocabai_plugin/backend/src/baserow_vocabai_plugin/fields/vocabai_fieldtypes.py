@@ -138,33 +138,9 @@ class TranslationFieldType(TransformationFieldType):
         field,
         starting_row,
         update_collector,
+        field_cache: "FieldCache",
         via_path_to_starting_table,
     ):
-
-        if False:
-            # when using celery tasks for updates
-
-            logger.info(f'row_of_dependency_updated, row: {starting_row} vars: {vars(starting_row)}, source_field: {vars(field.source_field)}')
-            source_internal_field_name = f'field_{field.source_field.id}'
-            source_value = getattr(starting_row, source_internal_field_name)
-
-            # add translation logic here:
-            # translated_value = 'translation: ' + source_value
-            # logger.info(f'starting_row: {starting_row} vars: {vars(starting_row)}')
-
-            table_id = field.table.id
-            row_id = starting_row.id
-            field_id = f'field_{field.id}'
-            run_clt_translation.delay(source_value, table_id, row_id, field_id)
-
-            # update_collector.add_field_with_pending_update_statement(
-            #     field,
-            #     translated_value,
-            #     via_path_to_starting_table=via_path_to_starting_table,
-            # )        
-
-        # logging.info(f'field.source_field.language: {field.source_field.language} type: {type(field.source_field.language)}')
-
 
         def translate_rows(rows):
             source_language = field.source_field.language  
@@ -190,6 +166,7 @@ class TranslationFieldType(TransformationFieldType):
             field,
             starting_row,
             update_collector,
+            field_cache,
             via_path_to_starting_table,
         )        
 
@@ -267,6 +244,7 @@ class TransliterationFieldType(TransformationFieldType):
         field,
         starting_row,
         update_collector,
+        field_cache: "FieldCache",
         via_path_to_starting_table,
     ):
 
@@ -292,6 +270,7 @@ class TransliterationFieldType(TransformationFieldType):
             field,
             starting_row,
             update_collector,
+            field_cache,
             via_path_to_starting_table,
         )        
 
@@ -366,6 +345,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
         field,
         starting_row,
         update_collector,
+        field_cache,
         via_path_to_starting_table,
     ):
 
@@ -391,6 +371,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
             field,
             starting_row,
             update_collector,
+            field_cache,
             via_path_to_starting_table,
         )        
 

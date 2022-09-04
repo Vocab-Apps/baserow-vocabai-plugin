@@ -42,6 +42,11 @@ import fieldSubForm from '@baserow/modules/database/mixins/fieldSubForm'
 export default {
   name: 'VocabAiDictionaryLookupSubForm',
   mixins: [form, fieldSubForm],
+  created() {
+    if (this.$store.getters['cloudlanguagetools/allLanguages'].length == 0) {
+      this.$store.dispatch('cloudlanguagetools/fetchAll', '', { root: true });
+    }
+  },    
   data() {
     return {
       allowedValues: ['source_field_id', 'lookup_id'],
