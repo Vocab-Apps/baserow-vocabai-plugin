@@ -7,8 +7,11 @@ import {DictionaryLookupFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTyp
 import cloudlanguagetoolsStore from '@baserow-vocabai-plugin/store/cloudlanguagetools'
 
 export default (context) => {
-  const { app } = context
+  const { store, app, isDev } = context
+  
   app.$registry.register('plugin', new PluginNamePlugin(context))
+
+  store.registerModule('cloudlanguagetools', cloudlanguagetoolsStore)
 
   app.$registry.register('field', new LanguageFieldType(context))
   app.$registry.register('field', new TranslationFieldType(context))
