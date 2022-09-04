@@ -7,6 +7,14 @@ from baserow.contrib.database.fields.models import Field
 # ./dev.sh run backend manage makemigrations
 # ./dev.sh run backend manage migrate
 
+# as a plugin:
+# docker-compose run baserow-vocabai-plugin /baserow.sh backend-cmd manage makemigrations
+# docker-compose run baserow-vocabai-plugin /baserow.sh backend-cmd manage migrate
+
+# I find that I have to run this:
+# docker container exec e214ca3b3644 /baserow.sh backend-cmd manage makemigrations baserow_vocabai_plugin
+# docker container exec e214ca3b3644 /baserow.sh backend-cmd manage migrate baserow_vocabai_plugin
+
 # undoing a migration:
 # ./dev.sh run backend manage migrate database 0084
 
