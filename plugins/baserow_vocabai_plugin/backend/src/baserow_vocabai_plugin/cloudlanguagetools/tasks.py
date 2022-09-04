@@ -4,6 +4,10 @@ from baserow.contrib.database.table.models import Table
 from baserow.contrib.database.rows.signals import before_rows_update, rows_updated
 from baserow.contrib.database.table.signals import table_updated
 
+from django.conf import settings
+import redis
+import json
+
 from . import instance as clt_instance
 
 import time
@@ -190,3 +194,44 @@ def run_clt_lookup_many_rows(self, lookup_id, table_id, row_id_list, source_fiel
             setattr(row, target_field_id, result)
             # logger.info(f'updated row: {row}')
             row.save()
+
+
+# retrieving language data
+# ========================
+
+#@app.on_after_configure.connect
+@app.on_after_finalize.connect
+def setup_periodic_tasks(sender, **kwargs):
+    logger.info('setup_periodic_tasks')
+    
+    # run every 30s
+    # period = 30
+    period = 3600 * 3
+    sender.add_periodic_task(period, refresh_cloudlanguagetools_language_data.s(), name='cloudlanguagetools language data')
+    
+    # run once at startup
+    refresh_cloudlanguagetools_language_data.delay()
+
+
+# noinspection PyUnusedLocal
+@app.task(
+    bind=True,
+    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
+    time_limit=EXPORT_TIME_LIMIT,
+)
+def refresh_cloudlanguagetools_language_data(self):
+    logger.info('refresh_cloudlanguagetools_language_data')
+    manager = clt_instance.get_servicemanager()
+    language_data = manager.get_language_data_json()
+
+    # create redis client
+    redis_url = settings.REDIS_URL
+    logger.info(f'connecting to {redis_url}')
+    r = redis.Redis.from_url( redis_url )
+
+    for key, data in language_data.items():
+        redis_key = f'cloudlanguagetools:language_data:{key}'
+        r.set(redis_key, json.dumps(data))
+
+    r.close()
+
