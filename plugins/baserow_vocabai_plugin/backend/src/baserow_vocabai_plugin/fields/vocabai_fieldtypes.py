@@ -18,6 +18,11 @@ from ..cloudlanguagetools import instance as clt_instance
 import logging
 logger = logging.getLogger(__name__)
 
+# see https://community.baserow.io/t/anonymous-api-access-or-universal-token/788/18 for background
+# the idea suggested by Nigel was to enhance Update Collector to run the lambdas at the end, at the right time
+# however this will require a baserow update, and it's more complicated to do when this code is running as a baserow plugin.
+USE_ENHANCED_UPDATE_COLLECTOR = False
+
 class LanguageTextField(models.TextField):
     pass
 
@@ -77,6 +82,19 @@ class TransformationFieldType(FieldType):
     ):
         self.update_all_rows(to_field)        
 
+    def process_transformation(self, field):
+        source_internal_field_name = f'field_{field.source_field.id}'
+        target_internal_field_name = f'field_{field.id}'
+
+        model = field.table.get_model()
+        rows_to_bulk_update = []
+        for row in model.objects.all():
+            source_value = getattr(row, source_internal_field_name)
+            transformed_value = self.transform_value(field, source_value)
+            setattr(row, target_internal_field_name, transformed_value)
+            rows_to_bulk_update.append(row)
+        model.objects.bulk_update(rows_to_bulk_update, fields=[field.db_column])
+
 class TranslationFieldType(TransformationFieldType):
     type = "translation"
     model_class = TranslationField
@@ -133,6 +151,13 @@ class TranslationFieldType(TransformationFieldType):
         )
 
 
+    def transform_value(self, field, source_value):
+        source_language = field.source_field.language  
+        target_language = field.target_language
+        translation_service = field.service            
+        translated_text = clt_instance.get_translation(source_value, source_language, target_language, translation_service)
+        return translated_text
+
     def row_of_dependency_updated(
         self,
         field,
@@ -142,23 +167,27 @@ class TranslationFieldType(TransformationFieldType):
         via_path_to_starting_table,
     ):
 
-        def translate_rows(rows):
-            source_language = field.source_field.language  
-            target_language = field.target_language
-            translation_service = field.service          
-            source_internal_field_name = f'field_{field.source_field.id}'
-            target_internal_field_name = f'field_{field.id}'
-            for row in rows:
-                text = getattr(row, source_internal_field_name)
-                if text != None:
-                    translated_text = clt_instance.get_translation(text, source_language, target_language, translation_service)
-                    setattr(row, target_internal_field_name, translated_text)
+        if USE_ENHANCED_UPDATE_COLLECTOR:
+            # as per nigel, it's preferrable to use the update collector to do the update at the end
+            def translate_rows(rows):
+                source_language = field.source_field.language  
+                target_language = field.target_language
+                translation_service = field.service          
+                source_internal_field_name = f'field_{field.source_field.id}'
+                target_internal_field_name = f'field_{field.id}'
+                for row in rows:
+                    text = getattr(row, source_internal_field_name)
+                    if text != None:
+                        translated_text = clt_instance.get_translation(text, source_language, target_language, translation_service)
+                        setattr(row, target_internal_field_name, translated_text)
 
-        update_collector.add_field_with_pending_update_function(
-            field,
-            update_function=translate_rows,
-            via_path_to_starting_table=via_path_to_starting_table,
-        )       
+            update_collector.add_field_with_pending_update_function(
+                field,
+                update_function=translate_rows,
+                via_path_to_starting_table=via_path_to_starting_table,
+            )       
+        else:
+            self.process_transformation(field)
 
         ViewHandler().field_value_updated(field)     
 
@@ -239,6 +268,11 @@ class TransliterationFieldType(TransformationFieldType):
             **kwargs
         )
 
+    def transform_value(self, field, source_value):
+        transliteration_id = field.transliteration_id
+        transliterated_text = clt_instance.get_transliteration(source_value, transliteration_id)
+        return transliterated_text
+
     def row_of_dependency_updated(
         self,
         field,
@@ -248,21 +282,27 @@ class TransliterationFieldType(TransformationFieldType):
         via_path_to_starting_table,
     ):
 
-        def transliterate_rows(rows):
-            transliteration_id = field.transliteration_id
-            source_internal_field_name = f'field_{field.source_field.id}'
-            target_internal_field_name = f'field_{field.id}'
-            for row in rows:
-                text = getattr(row, source_internal_field_name)
-                if text != None:
-                    transliterated_text = clt_instance.get_transliteration(text, transliteration_id)
-                    setattr(row, target_internal_field_name, transliterated_text)
 
-        update_collector.add_field_with_pending_update_function(
-            field,
-            update_function=transliterate_rows,
-            via_path_to_starting_table=via_path_to_starting_table,
-        )       
+        if USE_ENHANCED_UPDATE_COLLECTOR:
+
+            def transliterate_rows(rows):
+                transliteration_id = field.transliteration_id
+                source_internal_field_name = f'field_{field.source_field.id}'
+                target_internal_field_name = f'field_{field.id}'
+                for row in rows:
+                    text = getattr(row, source_internal_field_name)
+                    if text != None:
+                        transliterated_text = clt_instance.get_transliteration(text, transliteration_id)
+                        setattr(row, target_internal_field_name, transliterated_text)
+
+            update_collector.add_field_with_pending_update_function(
+                field,
+                update_function=transliterate_rows,
+                via_path_to_starting_table=via_path_to_starting_table,
+            )       
+
+        else:
+            self.process_transformation(field)
 
         ViewHandler().field_value_updated(field)     
 
@@ -340,6 +380,11 @@ class DictionaryLookupFieldType(TransformationFieldType):
         )
 
 
+    def transform_value(self, field, source_value):
+        lookup_id = field.lookup_id
+        lookup_result = clt_instance.get_dictionary_lookup(text, lookup_id)
+        return lookup_result
+
     def row_of_dependency_updated(
         self,
         field,
@@ -349,21 +394,24 @@ class DictionaryLookupFieldType(TransformationFieldType):
         via_path_to_starting_table,
     ):
 
-        def perform_dictionary_lookup_rows(rows):
-            lookup_id = field.lookup_id
-            source_internal_field_name = f'field_{field.source_field.id}'
-            target_internal_field_name = f'field_{field.id}'
-            for row in rows:
-                text = getattr(row, source_internal_field_name)
-                if text != None:
-                    lookup_result = clt_instance.get_dictionary_lookup(text, lookup_id)
-                    setattr(row, target_internal_field_name, lookup_result)
+        if USE_ENHANCED_UPDATE_COLLECTOR:
+            def perform_dictionary_lookup_rows(rows):
+                lookup_id = field.lookup_id
+                source_internal_field_name = f'field_{field.source_field.id}'
+                target_internal_field_name = f'field_{field.id}'
+                for row in rows:
+                    text = getattr(row, source_internal_field_name)
+                    if text != None:
+                        lookup_result = clt_instance.get_dictionary_lookup(text, lookup_id)
+                        setattr(row, target_internal_field_name, lookup_result)
 
-        update_collector.add_field_with_pending_update_function(
-            field,
-            update_function=perform_dictionary_lookup_rows,
-            via_path_to_starting_table=via_path_to_starting_table,
-        )       
+            update_collector.add_field_with_pending_update_function(
+                field,
+                update_function=perform_dictionary_lookup_rows,
+                via_path_to_starting_table=via_path_to_starting_table,
+            )       
+        else:
+            self.process_transformation(field)
 
         ViewHandler().field_value_updated(field)     
 
