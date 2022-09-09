@@ -382,7 +382,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
 
     def transform_value(self, field, source_value):
         lookup_id = field.lookup_id
-        lookup_result = clt_instance.get_dictionary_lookup(text, lookup_id)
+        lookup_result = clt_instance.get_dictionary_lookup(source_value, lookup_id)
         return lookup_result
 
     def row_of_dependency_updated(

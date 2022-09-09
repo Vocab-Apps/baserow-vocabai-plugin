@@ -20,10 +20,8 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      BASEROW_PUBLIC_URL: http://dev-1.vocab.ai
+      BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL}
       CLOUDLANGUAGETOOLS_CORE_KEY: ${CLOUDLANGUAGETOOLS_CORE_KEY}
-      BASEROW_BACKEND_LOG_LEVEL: INFO
-      BASEROW_CELERY_BEAT_DEBUG_LEVEL: INFO
       BASEROW_CELERY_WORKER_STARTUP_COMMAND: celery-worker
     volumes:
       - baserow_data:/baserow/data
