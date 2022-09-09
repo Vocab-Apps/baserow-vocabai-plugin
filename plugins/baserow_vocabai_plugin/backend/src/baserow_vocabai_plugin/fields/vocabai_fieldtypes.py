@@ -154,7 +154,9 @@ class TranslationFieldType(TransformationFieldType):
     def transform_value(self, field, source_value):
         source_language = field.source_field.language  
         target_language = field.target_language
-        translation_service = field.service            
+        translation_service = field.service
+        if source_value == None or len(source_value) == 0:
+            return ''
         translated_text = clt_instance.get_translation(source_value, source_language, target_language, translation_service)
         return translated_text
 
