@@ -82,6 +82,13 @@ class TransformationFieldType(FieldType):
     ):
         self.update_all_rows(to_field)        
 
+    def get_transformed_value(self, field, source_value):
+        if source_value == None or len(source_value) == 0:
+            return ''
+        transformed_value = self.transform_value(field, source_value)
+        return transformed_value
+
+
     def process_transformation(self, field):
         source_internal_field_name = f'field_{field.source_field.id}'
         target_internal_field_name = f'field_{field.id}'
@@ -90,7 +97,7 @@ class TransformationFieldType(FieldType):
         rows_to_bulk_update = []
         for row in model.objects.all():
             source_value = getattr(row, source_internal_field_name)
-            transformed_value = self.transform_value(field, source_value)
+            transformed_value = self.get_transformed_value(field, source_value)
             setattr(row, target_internal_field_name, transformed_value)
             rows_to_bulk_update.append(row)
         model.objects.bulk_update(rows_to_bulk_update, fields=[field.db_column])
