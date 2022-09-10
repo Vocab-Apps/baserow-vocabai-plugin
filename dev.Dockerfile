@@ -5,6 +5,7 @@
 # to build:
 # docker-compose -f docker-compose.dev.yml up --build
 # docker-compose -f docker-compose.dev.yml up -d --build
+# https://baserow.io/docs/plugins/boilerplate
 
 FROM baserow/baserow:1.11.0 as base
 
