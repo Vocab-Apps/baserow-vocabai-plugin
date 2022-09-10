@@ -66,7 +66,7 @@ class TransformationFieldType(FieldType):
             ]     
         return []    
 
-    def after_create(self, field, model, user, connection, before):
+    def after_create(self, field, model, user, connection, before, field_kwargs):
         self.update_all_rows(field)
 
     def after_update(
