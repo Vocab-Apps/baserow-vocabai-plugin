@@ -6,9 +6,9 @@
 # docker-compose -f docker-compose.dev.yml up --build
 # docker-compose -f docker-compose.dev.yml up -d --build
 
-FROM baserow/baserow:1.11.0 as base
+FROM baserow/baserow:1.12.0 as base
 
-FROM baserow/baserow:1.11.0
+FROM baserow/baserow:1.12.0
 
 ARG PLUGIN_BUILD_UID
 ENV PLUGIN_BUILD_UID=${PLUGIN_BUILD_UID:-9999}
