@@ -89,17 +89,23 @@ class TransformationFieldType(FieldType):
         return transformed_value
 
 
-    def process_transformation(self, field):
+    def process_transformation(self, field, starting_row):
         source_internal_field_name = f'field_{field.source_field.id}'
         target_internal_field_name = f'field_{field.id}'
 
-        model = field.table.get_model()
+        if isinstance(starting_row, list):
+            row_list = starting_row
+        else:
+            row_list = [starting_row]
+
         rows_to_bulk_update = []
-        for row in model.objects.all():
+        for row in row_list:
             source_value = getattr(row, source_internal_field_name)
             transformed_value = self.get_transformed_value(field, source_value)
             setattr(row, target_internal_field_name, transformed_value)
             rows_to_bulk_update.append(row)
+
+        model = field.table.get_model()
         model.objects.bulk_update(rows_to_bulk_update, fields=[field.db_column])
 
 class TranslationFieldType(TransformationFieldType):
@@ -196,7 +202,7 @@ class TranslationFieldType(TransformationFieldType):
                 via_path_to_starting_table=via_path_to_starting_table,
             )       
         else:
-            self.process_transformation(field)
+            self.process_transformation(field, starting_row)
 
         ViewHandler().field_value_updated(field)     
 
@@ -311,7 +317,7 @@ class TransliterationFieldType(TransformationFieldType):
             )       
 
         else:
-            self.process_transformation(field)
+            self.process_transformation(field, starting_row)
 
         ViewHandler().field_value_updated(field)     
 
@@ -420,7 +426,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
                 via_path_to_starting_table=via_path_to_starting_table,
             )       
         else:
-            self.process_transformation(field)
+            self.process_transformation(field, starting_row)
 
         ViewHandler().field_value_updated(field)     
 
