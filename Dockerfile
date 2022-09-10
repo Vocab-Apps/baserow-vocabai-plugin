@@ -1,3 +1,6 @@
+# docker build -t lucwastiaux/baserow-vocabai-plugin:20220910-1 -f Dockerfile .
+# docker push lucwastiaux/baserow-vocabai-plugin:20220910-1
+
 FROM baserow/baserow:1.12.0
 
 # install cloudlanguagetools dependencies
