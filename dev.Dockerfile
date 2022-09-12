@@ -6,6 +6,9 @@
 # docker-compose -f docker-compose.dev.yml up --build
 # docker-compose -f docker-compose.dev.yml up -d --build
 # https://baserow.io/docs/plugins/boilerplate
+#
+# attaching to container (for debugging)
+# docker exec -it 051b1e429d3d bash
 
 FROM baserow/baserow:1.12.0 as base
 
