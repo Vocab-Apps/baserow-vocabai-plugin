@@ -1,6 +1,6 @@
 diff -Naur baserow/web-frontend/config/nuxt.config.base.js baserow-vocabai-patched/web-frontend/config/nuxt.config.base.js
---- baserow/web-frontend/config/nuxt.config.base.js	2022-09-13 10:47:38.940000000 +0800
-+++ baserow/web-frontend/config/nuxt.config.base.js	2022-09-13 10:35:26.080000000 +0800
+--- baserow/web-frontend/config/nuxt.config.base.js	2022-09-13 11:12:18.240000000 +0800
++++ baserow-vocabai-patched/web-frontend/config/nuxt.config.base.js	2022-09-13 10:35:26.080000000 +0800
 @@ -19,11 +19,17 @@
      base + '/modules/core/module.js',
      base + '/modules/database/module.js',
@@ -20,8 +20,8 @@ diff -Naur baserow/web-frontend/config/nuxt.config.base.js baserow-vocabai-patch
        extend(config, ctx) {
          config.node = { fs: 'empty' }
 diff -Naur baserow/web-frontend/package.json baserow-vocabai-patched/web-frontend/package.json
---- baserow/web-frontend/package.json	2022-09-13 10:47:44.270000000 +0800
-+++ baserow/web-frontend/package.json	2022-09-13 10:52:26.080000000 +0800
+--- baserow/web-frontend/package.json	2022-09-13 11:12:22.940000000 +0800
++++ baserow-vocabai-patched/web-frontend/package.json	2022-09-13 10:52:26.080000000 +0800
 @@ -45,7 +45,8 @@
      "uuid": "^8.3.2",
      "vue-chartjs": "^3.5.1",

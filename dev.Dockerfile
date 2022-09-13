@@ -48,7 +48,7 @@ COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./graphics/logo.svg /baserow/we
 # how to create the patch:
 # diff -Naur baserow/web-frontend/ baserow-vocabai-patched/web-frontend/ > ~/python/baserow-vocabai-plugin/baserow-patches/sentry_setup.patch
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./baserow-patches/sentry_setup.patch /patches/sentry_setup.patch
-RUN patch -u -p0 -i /patches/sentry_setup.patch
+RUN cd /baserow && patch -u -p1 -i /patches/sentry_setup.patch
 
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/ $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/
 RUN /baserow/plugins/install_plugin.sh --folder $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin --dev
