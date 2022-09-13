@@ -1,0 +1,34 @@
+diff -Naur baserow/web-frontend/config/nuxt.config.base.js baserow-vocabai-patched/web-frontend/config/nuxt.config.base.js
+--- baserow/web-frontend/config/nuxt.config.base.js	2022-09-13 10:47:38.940000000 +0800
++++ baserow/web-frontend/config/nuxt.config.base.js	2022-09-13 10:35:26.080000000 +0800
+@@ -19,11 +19,17 @@
+     base + '/modules/core/module.js',
+     base + '/modules/database/module.js',
+     premiumBase + '/modules/baserow_premium/module.js',
++    '@nuxtjs/sentry'
+   ]
+ 
+   const modules = baseModules.concat(additionalModules)
+   return {
+     modules,
++    sentry: {
++      dsn: 'https://33f709910b214ed282315bd91344bae0@o968582.ingest.sentry.io/6742673',
++      config: {
++      },
++    },    
+     build: {
+       extend(config, ctx) {
+         config.node = { fs: 'empty' }
+diff -Naur baserow/web-frontend/package.json baserow-vocabai-patched/web-frontend/package.json
+--- baserow/web-frontend/package.json	2022-09-13 10:47:44.270000000 +0800
++++ baserow/web-frontend/package.json	2022-09-13 10:52:26.080000000 +0800
+@@ -45,7 +45,8 @@
+     "uuid": "^8.3.2",
+     "vue-chartjs": "^3.5.1",
+     "vuejs-datepicker": "^1.6.2",
+-    "vuelidate": "^0.7.5"
++    "vuelidate": "^0.7.5",
++    "@nuxtjs/sentry": "^6.0.0"
+   },
+   "devDependencies": {
+     "@nuxtjs/eslint-config": "^6.0.1",
