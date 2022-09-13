@@ -132,25 +132,12 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
 )
 def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_field_id, target_field_id):
     for row_id_list in iterate_row_id_buckets(table_id):
-        logger.info(f'scheduling transliteration for bucket of {len(row_id_list)} rows')
-        run_clt_transliteration_many_rows.delay(transliteration_id, table_id, row_id_list, source_field_id, target_field_id)
-
-@app.task(
-    bind=True,
-    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
-    time_limit=EXPORT_TIME_LIMIT,
-)
-def run_clt_transliteration_many_rows(self, transliteration_id, table_id, row_id_list, source_field_id, target_field_id):
-    logger.info(f'run_clt_transliteration_many_rows table_id: {table_id} row count: {len(row_id_list)} field_id: {target_field_id}')
-
-    for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-        text = getattr(row, source_field_id)
-        if text != None and len(text) > 0:
-            # logger.info(f'getting transliteration for row {row}, text: {text}')
-            result = clt_instance.get_transliteration(text, transliteration_id)
-            setattr(row, target_field_id, result)
-            # logger.info(f'updated row: {row}')
-            row.save()    
+        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+            text = getattr(row, source_field_id)
+            if text != None and len(text) > 0:
+                result = clt_instance.get_transliteration(text, transliteration_id)
+                setattr(row, target_field_id, result)
+                row.save()
 
 
 # dictionary lookup
@@ -164,26 +151,13 @@ def run_clt_transliteration_many_rows(self, transliteration_id, table_id, row_id
 )
 def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_field_id):
     for row_id_list in iterate_row_id_buckets(table_id):
-        logger.info(f'scheduling lookup for bucket of {len(row_id_list)} rows')
-        run_clt_lookup_many_rows.delay(lookup_id, table_id, row_id_list, source_field_id, target_field_id)
+        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+            text = getattr(row, source_field_id)
+            if text != None and len(text) > 0:
+                result = clt_instance.get_dictionary_lookup(text, lookup_id)
+                setattr(row, target_field_id, result)
+                row.save()        
 
-
-@app.task(
-    bind=True,
-    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
-    time_limit=EXPORT_TIME_LIMIT,
-)
-def run_clt_lookup_many_rows(self, lookup_id, table_id, row_id_list, source_field_id, target_field_id):
-    logger.info(f'run_clt_lookup_many_rows table_id: {table_id} row count: {len(row_id_list)} field_id: {target_field_id}')
-
-    for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-        text = getattr(row, source_field_id)
-        if text != None and len(text) > 0:
-            # logger.info(f'getting lookup for row {row}, text: {text}')
-            result = clt_instance.get_dictionary_lookup(text, lookup_id)
-            setattr(row, target_field_id, result)
-            # logger.info(f'updated row: {row}')
-            row.save()
 
 
 # retrieving language data
