@@ -12,6 +12,11 @@
 #
 # following logs:
 # docker logs --since 1h -f baserow-vocabai-plugin
+# 
+# to bring down
+# docker-compose -f docker-compose.dev.yml down
+# bring down and clear volumes:
+# docker-compose -f docker-compose.dev.yml down -v
 
 
 FROM baserow/baserow:1.12.0 as base
