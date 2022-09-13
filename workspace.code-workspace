@@ -6,7 +6,7 @@
 	],
 	"settings": {
 		"python.analysis.extraPaths": [
-			"/home/luc/baserow/backend/src"
+			"/home/luc/python/baserow/backend/src"
 		]
 	}
 }
