@@ -29,6 +29,9 @@ RUN groupmod -g $PLUGIN_BUILD_GID baserow_docker_group && usermod -u $PLUGIN_BUI
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/dev.txt /tmp/plugin-dev-requirements.txt
 RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt
 
+# common between dev/prod
+# =======================
+
 # install cloudlanguagetools dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 RUN . /baserow/venv/bin/activate && pip3 install clt_spacy==0.1 && pip3 cache purge
