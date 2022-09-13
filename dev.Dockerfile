@@ -37,6 +37,9 @@ RUN . /baserow/venv/bin/activate && pip3 install clt_wenlin==0.7 && pip3 cache p
 RUN . /baserow/venv/bin/activate && pip3 install clt_requirements==0.1 && pip3 cache purge
 RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==2.5 && pip3 cache purge
 
+# install sentry
+RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk && pip3 cache purge
+
 # modify some assets
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./graphics/logo.svg /baserow/web-frontend/modules/core/static/img/logo.svg
 
