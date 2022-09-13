@@ -23,6 +23,7 @@ services:
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL}
       CLOUDLANGUAGETOOLS_CORE_KEY: ${CLOUDLANGUAGETOOLS_CORE_KEY}
       BASEROW_CELERY_WORKER_STARTUP_COMMAND: celery-worker
+      BASEROW_AMOUNT_OF_WORKERS: 2
     volumes:
       - baserow_data:/baserow/data
       - ./plugins/baserow_vocabai_plugin/backend:/baserow/data/plugins/baserow_vocabai_plugin/backend

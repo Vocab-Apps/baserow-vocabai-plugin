@@ -108,26 +108,16 @@ def process_row_id_bucket_iterate_rows(table_id, row_id_list):
     time_limit=EXPORT_TIME_LIMIT,
 )
 def run_clt_translation_all_rows(self, table_id, source_language, target_language, service, source_field_id, target_field_id):
+    # populating all rows is still a single celery task, but we break it up so that we can notify the user
+    # about work in progress
+
     for row_id_list in iterate_row_id_buckets(table_id):
-        logger.info(f'scheduling translation for bucket of {len(row_id_list)} rows')
-        run_clt_translation_many_rows.delay(source_language, target_language, service, table_id, row_id_list, source_field_id, target_field_id)
-
-@app.task(
-    bind=True,
-    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
-    time_limit=EXPORT_TIME_LIMIT,
-)
-def run_clt_translation_many_rows(self, source_language, target_language, service, table_id, row_id_list, source_field_id, target_field_id):
-    logger.info(f'run_clt_translation_many_rows table_id: {table_id} row count: {len(row_id_list)}')
-
-    for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-        text = getattr(row, source_field_id)
-        if text != None and len(text) > 0:
-            # logger.info(f'getting translation for row {row}, text: {text}')
-            translated_text = clt_instance.get_translation(text, source_language, target_language, service)
-            setattr(row, target_field_id, translated_text)
-            # logger.info(f'updated row: {row}')
-            row.save()
+        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+            text = getattr(row, source_field_id)
+            if text != None and len(text) > 0:
+                translated_text = clt_instance.get_translation(text, source_language, target_language, service)
+                setattr(row, target_field_id, translated_text)
+                row.save()
 
 
 
