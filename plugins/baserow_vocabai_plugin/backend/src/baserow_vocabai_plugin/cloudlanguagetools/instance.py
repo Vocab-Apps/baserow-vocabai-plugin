@@ -73,6 +73,11 @@ def get_dictionary_lookup(text, lookup_id):
         lookup_result = clt_instance.get_dictionary_lookup(text, service, lookup_key)
         if isinstance(lookup_result, list):
             return ' / '.join(lookup_result)
+        elif isinstance(lookup_result, dict):
+            result_list = []
+            for key, value in lookup_result.items():
+                result_list.append(key + ': ' + ' / '.join(value))
+            return ', '.join(result_list)
         else:
             return str(lookup_result)
     except cloudlanguagetools.errors.NotFoundError:

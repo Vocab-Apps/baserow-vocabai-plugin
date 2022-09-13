@@ -9,6 +9,10 @@
 #
 # attaching to container (for debugging)
 # docker exec -it 051b1e429d3d bash
+#
+# following logs:
+# docker logs --since 1h -f baserow-vocabai-plugin
+
 
 FROM baserow/baserow:1.12.0 as base
 
