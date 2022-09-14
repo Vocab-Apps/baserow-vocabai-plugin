@@ -110,18 +110,17 @@ def track_usage(usage_user_id, service_name, request_type, text):
         logger.error(f'found {len(user_records)} records for user_id: {usage_user_id}')
     user = user_records[0]
 
-    # VocabAiUsage
-    # VocabAiUsage.objects.fil
-
-    # look for monthly VocabAiUsage entry
-    monthly_usage_records = VocabAiUsage.objects.filter(user=user, period=USAGE_PERIOD_MONTHLY, period_time=period_time_monthly)
+    track_usage_period(user, USAGE_PERIOD_MONTHLY, period_time_monthly, character_cost)
+    track_usage_period(user, USAGE_PERIOD_DAILY, period_time_daily, character_cost)
+    
+def track_usage_period(user, period, period_time, character_cost):
+    monthly_usage_records = VocabAiUsage.objects.filter(user=user, period=period, period_time=period_time)
     if len(monthly_usage_records) == 0:
         # create record
-        usage = VocabAiUsage(user=user, period=USAGE_PERIOD_MONTHLY, period_time=period_time_monthly, characters=character_cost)
+        usage = VocabAiUsage(user=user, period=period, period_time=period_time, characters=character_cost)
     else:
         usage = monthly_usage_records[0]
         usage.characters = usage.characters + character_cost
     usage.save()
 
-    logger.info(f'usage for {user}: {usage.characters}')
-    
+    logger.info(f'user {user} usage for {period} / {period_time}: {usage.characters} characters')
