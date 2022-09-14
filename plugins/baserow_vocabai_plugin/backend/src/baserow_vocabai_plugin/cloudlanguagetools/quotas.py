@@ -9,10 +9,15 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 FREE_ACCOUNT_DAILY_MAX_CHARACTERS=5000
-FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=25000
+# FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=25000
+FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=75
 
 
-class QuotaOverUsage(Exception):
+from rest_framework.exceptions import APIException
+
+class QuotaOverUsage(APIException):
+    status_code = 429
+
     def __init__(self, period, characters, max_characters):
         message = f'Exceeded {period} quota, used {characters} out of maximum {max_characters}. You can continue to use free services.'
         super().__init__(message)        
