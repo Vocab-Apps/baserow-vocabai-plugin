@@ -55,9 +55,13 @@ def get_translation(text, source_language, target_language, service, usage_user_
     target_language_options = [x for x in translation_options if x['language_code'] == target_language and x['service'] == service]
     source_language_key = source_language_options[0]['language_id']
     target_language_key = target_language_options[0]['language_id']
+
+    usage_record = get_usage_record(usage_user_id)
+    usage_record.check_quota_available()
+
     translated_text = clt_instance.get_translation(text, service, source_language_key, target_language_key)
 
-    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.translation, text)
+    usage_record.update_usage(service, cloudlanguagetools.constants.RequestType.translation, text)
 
     return translated_text
 
@@ -68,9 +72,12 @@ def get_transliteration(text, transliteration_id, usage_user_id):
     service = transliteration_option[0]['service']
     transliteration_key = transliteration_option[0]['transliteration_key']
 
+    usage_record = get_usage_record(usage_user_id)
+    usage_record.check_quota_available()
+
     translated_text = clt_instance.get_transliteration(text, service, transliteration_key)
 
-    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.transliteration, text)
+    usage_record.update_usage(service, cloudlanguagetools.constants.RequestType.transliteration, text)
 
     return translated_text    
 
@@ -81,11 +88,15 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     service = lookup_option[0]['service']
     lookup_key = lookup_option[0]['lookup_key']
 
-    # todo: replace by dictionary usage
-    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.transliteration, text)
+    usage_record = get_usage_record(usage_user_id)
+    usage_record.check_quota_available()
 
     try:
         lookup_result = clt_instance.get_dictionary_lookup(text, service, lookup_key)
+
+        # todo: replace by dictionary usage        
+        usage_record.update_usage(service, cloudlanguagetools.constants.RequestType.transliteration, text)
+
         if isinstance(lookup_result, list):
             return ' / '.join(lookup_result)
         elif isinstance(lookup_result, dict):
@@ -98,29 +109,79 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     except cloudlanguagetools.errors.NotFoundError:
         return None
 
-def track_usage(usage_user_id, service_name, request_type, text):
-    character_cost = clt_instance.service_cost(text, service_name, request_type)
+class UsageRecord():
+    def __init__(self, monthly_usage_record, daily_usage_record):
+        self.monthly_usage_record = monthly_usage_record
+        self.daily_usage_record = daily_usage_record        
 
-    period_time_monthly = int(datetime.datetime.today().strftime('%Y%m'))
-    period_time_daily = int(datetime.datetime.today().strftime('%Y%m%d'))
+    def check_quota_available(self):
+        pass
 
+    def update_usage(self, service_name, request_type, text):
+        character_cost = clt_instance.service_cost(text, service_name, request_type)
+
+        self.daily_usage_record.characters = self.daily_usage_record.characters + character_cost
+        self.monthly_usage_record.characters = self.monthly_usage_record.characters + character_cost
+
+        self.daily_usage_record.save()
+        self.monthly_usage_record.save()
+
+        self.log_usage()
+
+    def log_usage(self):
+        user = self.daily_usage_record.user
+        daily = self.daily_usage_record
+        monthly = self.monthly_usage_record
+        logger.info(f'usage for {user}, daily/{daily.period_time}: {daily.characters} characters, monthly/{monthly.period_time}: {monthly.characters} characters')
+
+def get_usage_record(usage_user_id):
     # locate user
     user_records = User.objects.filter(id=usage_user_id)
     if len(user_records) != 1:
         logger.error(f'found {len(user_records)} records for user_id: {usage_user_id}')
     user = user_records[0]
 
-    track_usage_period(user, USAGE_PERIOD_MONTHLY, period_time_monthly, character_cost)
-    track_usage_period(user, USAGE_PERIOD_DAILY, period_time_daily, character_cost)
-    
-def track_usage_period(user, period, period_time, character_cost):
+    period_time_monthly = int(datetime.datetime.today().strftime('%Y%m'))
+    period_time_daily = int(datetime.datetime.today().strftime('%Y%m%d'))        
+
+    return UsageRecord(get_usage_entry(user, USAGE_PERIOD_MONTHLY, period_time_monthly), 
+                       get_usage_entry(user, USAGE_PERIOD_DAILY, period_time_daily))
+
+
+def get_usage_entry(user, period, period_time):
     monthly_usage_records = VocabAiUsage.objects.filter(user=user, period=period, period_time=period_time)
     if len(monthly_usage_records) == 0:
         # create record
-        usage = VocabAiUsage(user=user, period=period, period_time=period_time, characters=character_cost)
+        usage = VocabAiUsage(user=user, period=period, period_time=period_time, characters=0)
+        usage.save()
     else:
         usage = monthly_usage_records[0]
-        usage.characters = usage.characters + character_cost
-    usage.save()
 
-    logger.info(f'user {user} usage for {period} / {period_time}: {usage.characters} characters')
+    return usage
+
+# def track_usage(usage_user_id, service_name, request_type, text):
+#     character_cost = clt_instance.service_cost(text, service_name, request_type)
+
+#     period_time_monthly = int(datetime.datetime.today().strftime('%Y%m'))
+#     period_time_daily = int(datetime.datetime.today().strftime('%Y%m%d'))
+
+#     # locate user
+#     user_records = User.objects.filter(id=usage_user_id)
+#     if len(user_records) != 1:
+#         logger.error(f'found {len(user_records)} records for user_id: {usage_user_id}')
+#     user = user_records[0]
+
+#     track_usage_period(user, USAGE_PERIOD_MONTHLY, period_time_monthly, character_cost)
+#     track_usage_period(user, USAGE_PERIOD_DAILY, period_time_daily, character_cost)
+    
+# def track_usage_period(user, period, period_time, character_cost):
+#     monthly_usage_records = VocabAiUsage.objects.filter(user=user, period=period, period_time=period_time)
+#     if len(monthly_usage_records) == 0:
+#         # create record
+#         usage = VocabAiUsage(user=user, period=period, period_time=period_time, characters=character_cost)
+#     else:
+#         usage = monthly_usage_records[0]
+#         usage.characters = usage.characters + character_cost
+#     usage.save()
+
+#     logger.info(f'user {user} usage for {period} / {period_time}: {usage.characters} characters')
