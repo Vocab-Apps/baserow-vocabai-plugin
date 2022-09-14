@@ -43,7 +43,7 @@ def get_translation_services_source_target_language(source_language, target_lang
     return service_list
 
 
-def get_translation(text, source_language, target_language, service):
+def get_translation(text, source_language, target_language, service, usage_user_id):
     translation_options = get_translation_options()
     source_language_options = [x for x in translation_options if x['language_code'] == source_language and x['service'] == service]
     target_language_options = [x for x in translation_options if x['language_code'] == target_language and x['service'] == service]
@@ -53,7 +53,7 @@ def get_translation(text, source_language, target_language, service):
     return translated_text
 
 
-def get_transliteration(text, transliteration_id):
+def get_transliteration(text, transliteration_id, usage_user_id):
     transliteration_options = get_transliteration_options()
     transliteration_option = [x for x in transliteration_options if x['transliteration_id'] == transliteration_id]
     service = transliteration_option[0]['service']
@@ -63,7 +63,7 @@ def get_transliteration(text, transliteration_id):
     return translated_text    
 
 
-def get_dictionary_lookup(text, lookup_id):
+def get_dictionary_lookup(text, lookup_id, usage_user_id):
     dictionary_lookup_options = get_dictionary_lookup_options()
     lookup_option = [x for x in dictionary_lookup_options if x['lookup_id'] == lookup_id]
     service = lookup_option[0]['service']

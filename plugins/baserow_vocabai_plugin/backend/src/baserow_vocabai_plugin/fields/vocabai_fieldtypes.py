@@ -10,6 +10,8 @@ from baserow.contrib.database.views.handler import ViewHandler
 
 from baserow.contrib.database.fields.dependencies.models import FieldDependency
 
+from baserow.core.models import GROUP_USER_PERMISSION_ADMIN, GroupUser
+
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField
 
 from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
@@ -82,12 +84,25 @@ class TransformationFieldType(FieldType):
     ):
         self.update_all_rows(to_field)        
 
-    def get_transformed_value(self, field, source_value):
+    def get_transformed_value(self, field, source_value, usage_user_id):
         if source_value == None or len(source_value) == 0:
             return ''
-        transformed_value = self.transform_value(field, source_value)
+        transformed_value = self.transform_value(field, source_value, usage_user_id)
         return transformed_value
 
+    def get_usage_user_id(self, field):
+        """get the user_id that this usage will be associated with"""
+
+        # find the admin in the group
+        group = field.table.database.group
+
+        admin_users = GroupUser.objects.filter(group_id=group.id, permissions=GROUP_USER_PERMISSION_ADMIN)
+        for admin_user in admin_users:
+            logger.info(f'admin_user: {admin_user.user}')
+            return admin_user.user.id
+
+        logger.error(f'admin user not found in group {group} group.id: {group.id}')
+        return None
 
     def process_transformation(self, field, starting_row):
         source_internal_field_name = f'field_{field.source_field.id}'
@@ -101,12 +116,13 @@ class TransformationFieldType(FieldType):
         rows_to_bulk_update = []
         for row in row_list:
             source_value = getattr(row, source_internal_field_name)
-            transformed_value = self.get_transformed_value(field, source_value)
+            transformed_value = self.get_transformed_value(field, source_value, self.get_usage_user_id(field))
             setattr(row, target_internal_field_name, transformed_value)
             rows_to_bulk_update.append(row)
 
         model = field.table.get_model()
         model.objects.bulk_update(rows_to_bulk_update, fields=[field.db_column])
+
 
 class TranslationFieldType(TransformationFieldType):
     type = "translation"
@@ -164,13 +180,13 @@ class TranslationFieldType(TransformationFieldType):
         )
 
 
-    def transform_value(self, field, source_value):
+    def transform_value(self, field, source_value, usage_user_id):
         source_language = field.source_field.language  
         target_language = field.target_language
         translation_service = field.service
         if source_value == None or len(source_value) == 0:
             return ''
-        translated_text = clt_instance.get_translation(source_value, source_language, target_language, translation_service)
+        translated_text = clt_instance.get_translation(source_value, source_language, target_language, translation_service, usage_user_id)
         return translated_text
 
     def row_of_dependency_updated(
@@ -232,7 +248,8 @@ class TranslationFieldType(TransformationFieldType):
                                            target_language,
                                            translation_service,
                                            source_field_id, 
-                                           target_field_id)
+                                           target_field_id,
+                                           self.get_usage_user_id(field))
 
 
 class TransliterationFieldType(TransformationFieldType):
@@ -283,9 +300,9 @@ class TransliterationFieldType(TransformationFieldType):
             **kwargs
         )
 
-    def transform_value(self, field, source_value):
+    def transform_value(self, field, source_value, usage_user_id):
         transliteration_id = field.transliteration_id
-        transliterated_text = clt_instance.get_transliteration(source_value, transliteration_id)
+        transliterated_text = clt_instance.get_transliteration(source_value, transliteration_id, usage_user_id)
         return transliterated_text
 
     def row_of_dependency_updated(
@@ -342,7 +359,8 @@ class TransliterationFieldType(TransformationFieldType):
         run_clt_transliteration_all_rows.delay(table_id, 
                                                 transliteration_id,
                                                 source_field_id, 
-                                                target_field_id)
+                                                target_field_id,
+                                                self.get_usage_user_id(field))
 
 
 
@@ -395,9 +413,9 @@ class DictionaryLookupFieldType(TransformationFieldType):
         )
 
 
-    def transform_value(self, field, source_value):
+    def transform_value(self, field, source_value, usage_user_id):
         lookup_id = field.lookup_id
-        lookup_result = clt_instance.get_dictionary_lookup(source_value, lookup_id)
+        lookup_result = clt_instance.get_dictionary_lookup(source_value, lookup_id, usage_user_id)
         return lookup_result
 
     def row_of_dependency_updated(
@@ -450,5 +468,6 @@ class DictionaryLookupFieldType(TransformationFieldType):
         run_clt_lookup_all_rows.delay(table_id, 
                                         lookup_id, 
                                         source_field_id, 
-                                        target_field_id)
+                                        target_field_id,
+                                        self.get_usage_user_id(field))
 

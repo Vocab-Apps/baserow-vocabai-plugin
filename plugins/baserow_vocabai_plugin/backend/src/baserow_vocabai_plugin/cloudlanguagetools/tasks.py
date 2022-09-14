@@ -107,7 +107,7 @@ def process_row_id_bucket_iterate_rows(table_id, row_id_list):
     soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
     time_limit=EXPORT_TIME_LIMIT,
 )
-def run_clt_translation_all_rows(self, table_id, source_language, target_language, service, source_field_id, target_field_id):
+def run_clt_translation_all_rows(self, table_id, source_language, target_language, service, source_field_id, target_field_id, usage_user_id):
     # populating all rows is still a single celery task, but we break it up so that we can notify the user
     # about work in progress
 
@@ -115,7 +115,7 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
         for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
             text = getattr(row, source_field_id)
             if text != None and len(text) > 0:
-                translated_text = clt_instance.get_translation(text, source_language, target_language, service)
+                translated_text = clt_instance.get_translation(text, source_language, target_language, service, usage_user_id)
                 setattr(row, target_field_id, translated_text)
                 row.save()
 
@@ -130,12 +130,12 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
     soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
     time_limit=EXPORT_TIME_LIMIT,
 )
-def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_field_id, target_field_id):
+def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_field_id, target_field_id, usage_user_id):
     for row_id_list in iterate_row_id_buckets(table_id):
         for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
             text = getattr(row, source_field_id)
             if text != None and len(text) > 0:
-                result = clt_instance.get_transliteration(text, transliteration_id)
+                result = clt_instance.get_transliteration(text, transliteration_id, usage_user_id)
                 setattr(row, target_field_id, result)
                 row.save()
 
@@ -149,12 +149,12 @@ def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_
     soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
     time_limit=EXPORT_TIME_LIMIT,
 )
-def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_field_id):
+def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_field_id, usage_user_id):
     for row_id_list in iterate_row_id_buckets(table_id):
         for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
             text = getattr(row, source_field_id)
             if text != None and len(text) > 0:
-                result = clt_instance.get_dictionary_lookup(text, lookup_id)
+                result = clt_instance.get_dictionary_lookup(text, lookup_id, usage_user_id)
                 setattr(row, target_field_id, result)
                 row.save()        
 
