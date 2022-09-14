@@ -81,6 +81,7 @@ class TransformationFieldType(FieldType):
         connection,
         altered_column,
         before,
+        to_field_kwargs
     ):
         self.update_all_rows(to_field)        
 
