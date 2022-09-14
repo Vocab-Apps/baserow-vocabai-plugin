@@ -8,13 +8,25 @@ User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
+FREE_ACCOUNT_DAILY_MAX_CHARACTERS=5000
+FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=25000
+
+
+class QuotaOverUsage(Exception):
+    def __init__(self, period, characters, max_characters):
+        message = f'Exceeded {period} quota, used {characters} out of maximum {max_characters}. You can continue to use free services.'
+        super().__init__(message)        
+
 class UsageRecord():
     def __init__(self, monthly_usage_record, daily_usage_record):
         self.monthly_usage_record = monthly_usage_record
         self.daily_usage_record = daily_usage_record        
 
     def check_quota_available(self):
-        pass
+        if self.monthly_usage_record.characters > FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS:
+            raise QuotaOverUsage('Monthly', self.monthly_usage_record.characters, FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS)
+        if self.daily_usage_record.characters > FREE_ACCOUNT_DAILY_MAX_CHARACTERS:
+            raise QuotaOverUsage('Daily', self.daily_usage_record.characters, FREE_ACCOUNT_DAILY_MAX_CHARACTERS)
 
     def update_usage(self, character_cost):
         self.daily_usage_record.characters = self.daily_usage_record.characters + character_cost
