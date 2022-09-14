@@ -12,6 +12,7 @@ from . import instance as clt_instance
 from .quotas import QuotaOverUsage
 
 import time
+import requests
 
 import logging
 logger = logging.getLogger(__name__)
@@ -185,7 +186,8 @@ def setup_periodic_tasks(sender, **kwargs):
     refresh_cloudlanguagetools_language_data.delay()
 
 
-@app.task()
+# we want to auto-retry on requests.exceptions.ReadTimeout
+@app.task(autoretry_for=(requests.exceptions.ReadTimeout,), retry_kwargs={'max_retries': 5})
 def refresh_cloudlanguagetools_language_data():
     logger.info('refresh_cloudlanguagetools_language_data')
     manager = clt_instance.get_servicemanager()
