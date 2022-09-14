@@ -1,9 +1,15 @@
 import logging
 import redis
 import json
+import datetime
 import cloudlanguagetools.servicemanager
 
+from ..fields.vocabai_models import VocabAiUsage, USAGE_PERIOD_MONTHLY, USAGE_PERIOD_DAILY
+
 from django.conf import settings
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +56,9 @@ def get_translation(text, source_language, target_language, service, usage_user_
     source_language_key = source_language_options[0]['language_id']
     target_language_key = target_language_options[0]['language_id']
     translated_text = clt_instance.get_translation(text, service, source_language_key, target_language_key)
+
+    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.translation, text)
+
     return translated_text
 
 
@@ -60,6 +69,9 @@ def get_transliteration(text, transliteration_id, usage_user_id):
     transliteration_key = transliteration_option[0]['transliteration_key']
 
     translated_text = clt_instance.get_transliteration(text, service, transliteration_key)
+
+    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.transliteration, text)
+
     return translated_text    
 
 
@@ -68,6 +80,9 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     lookup_option = [x for x in dictionary_lookup_options if x['lookup_id'] == lookup_id]
     service = lookup_option[0]['service']
     lookup_key = lookup_option[0]['lookup_key']
+
+    # todo: replace by dictionary usage
+    track_usage(usage_user_id, service, cloudlanguagetools.constants.RequestType.transliteration, text)
 
     try:
         lookup_result = clt_instance.get_dictionary_lookup(text, service, lookup_key)
@@ -82,3 +97,31 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
             return str(lookup_result)
     except cloudlanguagetools.errors.NotFoundError:
         return None
+
+def track_usage(usage_user_id, service_name, request_type, text):
+    character_cost = clt_instance.service_cost(text, service_name, request_type)
+
+    period_time_monthly = int(datetime.datetime.today().strftime('%Y%m'))
+    period_time_daily = int(datetime.datetime.today().strftime('%Y%m%d'))
+
+    # locate user
+    user_records = User.objects.filter(id=usage_user_id)
+    if len(user_records) != 1:
+        logger.error(f'found {len(user_records)} records for user_id: {usage_user_id}')
+    user = user_records[0]
+
+    # VocabAiUsage
+    # VocabAiUsage.objects.fil
+
+    # look for monthly VocabAiUsage entry
+    monthly_usage_records = VocabAiUsage.objects.filter(user=user, period=USAGE_PERIOD_MONTHLY, period_time=period_time_monthly)
+    if len(monthly_usage_records) == 0:
+        # create record
+        usage = VocabAiUsage(user=user, period=USAGE_PERIOD_MONTHLY, period_time=period_time_monthly, characters=character_cost)
+    else:
+        usage = monthly_usage_records[0]
+        usage.characters = usage.characters + character_cost
+    usage.save()
+
+    logger.info(f'usage for {user}: {usage.characters}')
+    

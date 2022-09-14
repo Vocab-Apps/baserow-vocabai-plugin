@@ -2,21 +2,12 @@ from django.db import models
 
 from baserow.contrib.database.fields.models import Field
 
-
-# after making changes, run
-# ./dev.sh run backend manage makemigrations
-# ./dev.sh run backend manage migrate
-
-# as a plugin:
-# docker-compose run baserow-vocabai-plugin /baserow.sh backend-cmd manage makemigrations
-# docker-compose run baserow-vocabai-plugin /baserow.sh backend-cmd manage migrate
-
-# I find that I have to run this:
-# docker container exec e214ca3b3644 /baserow.sh backend-cmd manage makemigrations baserow_vocabai_plugin
-# docker container exec e214ca3b3644 /baserow.sh backend-cmd manage migrate baserow_vocabai_plugin
+# migrations
+# docker container exec baserow-vocabai-plugin /baserow.sh backend-cmd manage makemigrations baserow_vocabai_plugin
+# docker container exec baserow-vocabai-plugin /baserow.sh backend-cmd manage migrate baserow_vocabai_plugin
 
 # undoing a migration:
-# ./dev.sh run backend manage migrate database 0084
+# docker container exec baserow-vocabai-plugin /baserow.sh backend-cmd manage migrate baserow_vocabai_plugin 0001
 
 class LanguageField(Field):
     language = models.CharField(
@@ -80,3 +71,45 @@ class DictionaryLookupField(Field):
         default="",
         help_text="Dictionary lookup key for this service",
     )            
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+# usage tracking
+# ==============
+
+USAGE_PERIOD_MONTHLY = "MONTHLY"
+USAGE_PERIOD_DAILY = "DAILY"
+USAGE_PERIOD_CHOICES = (
+    (USAGE_PERIOD_MONTHLY, "Monthly"),
+    (USAGE_PERIOD_DAILY, "Member"),
+)
+
+class VocabAiUsage(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        help_text="The user for which this usage entry is for",
+    )
+    
+    # character usage
+    characters = models.IntegerField()
+
+    # indicate daily or monthly
+    period = models.CharField(
+        default=USAGE_PERIOD_DAILY,
+        max_length=8,
+        choices=USAGE_PERIOD_CHOICES
+    )    
+
+    # will contain 202209 or 20220914
+    period_time = models.IntegerField()
+
+    # keep track of when this record was modified
+    updated_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'period', 'period_time']),
+            models.Index(fields=['updated_time']),
+        ]
