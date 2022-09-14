@@ -9,8 +9,7 @@ User = get_user_model()
 logger = logging.getLogger(__name__)
 
 FREE_ACCOUNT_DAILY_MAX_CHARACTERS=5000
-# FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=25000
-FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=75
+FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS=25000
 
 
 from rest_framework.exceptions import APIException
