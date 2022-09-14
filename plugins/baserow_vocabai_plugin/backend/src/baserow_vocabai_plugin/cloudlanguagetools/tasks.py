@@ -9,6 +9,7 @@ import redis
 import json
 
 from . import instance as clt_instance
+from .quotas import QuotaOverUsage
 
 import time
 
@@ -111,13 +112,16 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
     # populating all rows is still a single celery task, but we break it up so that we can notify the user
     # about work in progress
 
-    for row_id_list in iterate_row_id_buckets(table_id):
-        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-            text = getattr(row, source_field_id)
-            if text != None and len(text) > 0:
-                translated_text = clt_instance.get_translation(text, source_language, target_language, service, usage_user_id)
-                setattr(row, target_field_id, translated_text)
-                row.save()
+    try:
+        for row_id_list in iterate_row_id_buckets(table_id):
+            for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+                text = getattr(row, source_field_id)
+                if text != None and len(text) > 0:
+                    translated_text = clt_instance.get_translation(text, source_language, target_language, service, usage_user_id)
+                    setattr(row, target_field_id, translated_text)
+                    row.save()
+    except QuotaOverUsage:
+        logger.exception(f'could not complete translation for user {usage_user_id}')
 
 
 
@@ -131,14 +135,16 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
     time_limit=EXPORT_TIME_LIMIT,
 )
 def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_field_id, target_field_id, usage_user_id):
-    for row_id_list in iterate_row_id_buckets(table_id):
-        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-            text = getattr(row, source_field_id)
-            if text != None and len(text) > 0:
-                result = clt_instance.get_transliteration(text, transliteration_id, usage_user_id)
-                setattr(row, target_field_id, result)
-                row.save()
-
+    try:
+        for row_id_list in iterate_row_id_buckets(table_id):
+            for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+                text = getattr(row, source_field_id)
+                if text != None and len(text) > 0:
+                    result = clt_instance.get_transliteration(text, transliteration_id, usage_user_id)
+                    setattr(row, target_field_id, result)
+                    row.save()
+    except QuotaOverUsage:
+        logger.exception(f'could not complete transliteration for user {usage_user_id}')
 
 # dictionary lookup
 # =================
@@ -150,13 +156,16 @@ def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_
     time_limit=EXPORT_TIME_LIMIT,
 )
 def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_field_id, usage_user_id):
-    for row_id_list in iterate_row_id_buckets(table_id):
-        for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
-            text = getattr(row, source_field_id)
-            if text != None and len(text) > 0:
-                result = clt_instance.get_dictionary_lookup(text, lookup_id, usage_user_id)
-                setattr(row, target_field_id, result)
-                row.save()        
+    try:
+        for row_id_list in iterate_row_id_buckets(table_id):
+            for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+                text = getattr(row, source_field_id)
+                if text != None and len(text) > 0:
+                    result = clt_instance.get_dictionary_lookup(text, lookup_id, usage_user_id)
+                    setattr(row, target_field_id, result)
+                    row.save()        
+    except QuotaOverUsage:
+        logger.exception(f'could not complete dictionary lookup for user {usage_user_id}')
 
 
 
