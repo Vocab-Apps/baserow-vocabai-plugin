@@ -124,6 +124,26 @@ class TransformationFieldType(FieldType):
         model.objects.bulk_update(rows_to_bulk_update, fields=[field.db_column])
 
 
+    def row_of_dependency_deleted(
+        self,
+        field,
+        starting_row,
+        update_collector,
+        field_cache,
+        via_path_to_starting_table):
+        # don't do anything
+        pass
+
+    def row_of_dependency_moved(
+        self,
+        field,
+        starting_row,
+        update_collector,
+        field_cache,
+        via_path_to_starting_table):    
+        # don't do anything
+        pass
+
 class TranslationFieldType(TransformationFieldType):
     type = "translation"
     model_class = TranslationField
