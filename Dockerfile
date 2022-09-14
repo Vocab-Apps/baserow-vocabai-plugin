@@ -17,7 +17,7 @@ RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==2.9 && pip3
 RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk && pip3 cache purge
 
 # modify some assets
-COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./graphics/logo.svg /baserow/web-frontend/modules/core/static/img/logo.svg
+# COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./graphics/logo.svg /baserow/web-frontend/modules/core/static/img/logo.svg
 
 # apply patches
 # =============
