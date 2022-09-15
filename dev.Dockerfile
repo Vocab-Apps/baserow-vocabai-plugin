@@ -8,7 +8,7 @@
 # https://baserow.io/docs/plugins/boilerplate
 #
 # attaching to container (for debugging)
-# docker exec -it 051b1e429d3d bash
+# docker exec -it baserow-vocabai-plugin bash
 #
 # following logs:
 # docker logs --since 1h -f baserow-vocabai-plugin
