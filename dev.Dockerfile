@@ -61,7 +61,7 @@ RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk && pip3 cache purge
 # creating the patch:
 # git diff baserow-1.12.0..baserow-vocabai-patch-1.12.0 > ~/python/baserow-vocabai-plugin/baserow-patches/baserow.patch
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./baserow-patches/baserow.patch /patches/baserow.patch
-RUN cd /baserow && patch -u -p0 -i /patches/baserow.patch
+RUN cd /baserow && patch -u -p1 -i /patches/baserow.patch
 
 # =============
 
