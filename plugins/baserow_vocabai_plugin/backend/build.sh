@@ -16,3 +16,10 @@ set -euo pipefail
 
 # Instead this file is ideal for any other installation custom steps here required by
 # your plugin. For example installing a postgres extension used by your plugin.
+
+# patch on top of baserow
+# =======================
+
+# creating the patch
+# git diff baserow-1.12.0..baserow-vocabai-patch-1.12.0 > ~/python/baserow-vocabai-plugin/plugins/baserow_vocabai_plugin/baserow-patches/baserow.patch
+cd /baserow && patch -u -p1 -i $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/baserow-patches/baserow.patch
