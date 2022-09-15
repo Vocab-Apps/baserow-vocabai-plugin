@@ -1,0 +1,78 @@
+diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
+index ddaf9f88..4292fce3 100644
+--- a/backend/src/baserow/config/settings/base.py
++++ b/backend/src/baserow/config/settings/base.py
+@@ -11,6 +11,23 @@ from corsheaders.defaults import default_headers
+ 
+ from baserow.version import VERSION
+ 
++# sentry setup
++# ============
++
++import sentry_sdk
++from sentry_sdk.integrations.django import DjangoIntegration
++from sentry_sdk.integrations.celery import CeleryIntegration
++
++sentry_sdk.init(
++    dsn="https://f7a7fa7dfe5f412f852c3bfe2defa091@o968582.ingest.sentry.io/6742581",
++    integrations=[DjangoIntegration(), CeleryIntegration()],
++    traces_sample_rate=1.0,
++    send_default_pii=True,
++)
++
++# sentry setup end
++# ================
++
+ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ 
+ BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
+diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
+index 8a5a4a22..9b12d3c3 100644
+--- a/web-frontend/config/nuxt.config.base.js
++++ b/web-frontend/config/nuxt.config.base.js
+@@ -19,11 +19,22 @@ export default function (
+     base + '/modules/core/module.js',
+     base + '/modules/database/module.js',
+     premiumBase + '/modules/baserow_premium/module.js',
++    '@nuxtjs/sentry'
+   ]
+ 
+   const modules = baseModules.concat(additionalModules)
+   return {
+     modules,
++    sentry: {
++      dsn: 'https://33f709910b214ed282315bd91344bae0@o968582.ingest.sentry.io/6742673',
++      config: {
++      },
++      publishRelease: {
++        authToken: '9b89e612331511edbbd996b6a33f5072',
++        org: 'language-tools',
++        project: 'baserow-vocabai-frontend',
++      }      
++    },    
+     build: {
+       extend(config, ctx) {
+         config.node = { fs: 'empty' }
+diff --git a/web-frontend/package.json b/web-frontend/package.json
+index 91dceb77..1ed9a6df 100644
+--- a/web-frontend/package.json
++++ b/web-frontend/package.json
+@@ -45,7 +45,8 @@
+     "uuid": "^8.3.2",
+     "vue-chartjs": "^3.5.1",
+     "vuejs-datepicker": "^1.6.2",
+-    "vuelidate": "^0.7.5"
++    "vuelidate": "^0.7.5",
++    "@nuxtjs/sentry": "^6.0.0"
+   },
+   "devDependencies": {
+     "@nuxtjs/eslint-config": "^6.0.1",
+@@ -78,6 +79,7 @@
+     "stylelint": "^13.13.1",
+     "stylelint-config-standard": "^22.0.0",
+     "stylelint-webpack-plugin": "^3.0.1",
+-    "vue-jest": "^3.0.3"
++    "vue-jest": "^3.0.3",
++    "@sentry/webpack-plugin": "^1.19.0"
+   }
+ }
