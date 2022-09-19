@@ -3,6 +3,9 @@
 
 FROM baserow/baserow:1.12.0
 
+ARG SENTRY_RELEASE
+ENV SENTRY_RELEASE=${SENTRY_RELEASE:-baserow-vocabai@0.0.0}
+
 # install ubuntu packages
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
