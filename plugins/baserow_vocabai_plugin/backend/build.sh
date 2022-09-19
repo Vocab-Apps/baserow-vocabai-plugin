@@ -17,6 +17,7 @@ set -euo pipefail
 # Instead this file is ideal for any other installation custom steps here required by
 # your plugin. For example installing a postgres extension used by your plugin.
 
+
 # patch on top of baserow
 # =======================
 
