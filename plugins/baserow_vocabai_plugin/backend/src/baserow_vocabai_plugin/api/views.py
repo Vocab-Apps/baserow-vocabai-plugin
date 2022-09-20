@@ -8,7 +8,7 @@ from baserow.contrib.database.api.tokens.authentications import TokenAuthenticat
 import logging
 
 
-from ..cloudlanguagetools import instance as clt_instance
+from ..cloudlanguagetools import clt_interface
 # this import is required so that celery can discover the task
 from ..cloudlanguagetools import tasks
 
@@ -33,7 +33,7 @@ class CloudLanguageToolsLanguageList(APIView):
     )
     @method_permission_classes([AllowAny])
     def get(self, request):
-        language_data = clt_instance.get_language_list()
+        language_data = clt_interface.get_language_list()
         return Response(language_data)
 
 
@@ -56,7 +56,7 @@ class CloudLanguageToolsTranslationOptions(APIView):
     )
     @method_permission_classes([AllowAny])
     def get(self, request):
-        language_data = clt_instance.get_translation_options()
+        language_data = clt_interface.get_translation_options()
         return Response(language_data)
 
 
@@ -79,7 +79,7 @@ class CloudLanguageToolsTransliterationOptions(APIView):
     )
     @method_permission_classes([AllowAny])
     def get(self, request):
-        language_data = clt_instance.get_transliteration_options()
+        language_data = clt_interface.get_transliteration_options()
         return Response(language_data)
 
 class CloudLanguageToolsDictionaryLookupOptions(APIView):
@@ -101,7 +101,7 @@ class CloudLanguageToolsDictionaryLookupOptions(APIView):
     )
     @method_permission_classes([AllowAny])
     def get(self, request):
-        language_data = clt_instance.get_dictionary_lookup_options()
+        language_data = clt_interface.get_dictionary_lookup_options()
         return Response(language_data)        
 
 class CloudLanguageToolsTranslationServices(APIView):
@@ -137,5 +137,5 @@ class CloudLanguageToolsTranslationServices(APIView):
     )
     @method_permission_classes([AllowAny])
     def get(self, request, source_language, target_language):
-        service_list = clt_instance.get_translation_services_source_target_language(source_language, target_language)
+        service_list = clt_interface.get_translation_services_source_target_language(source_language, target_language)
         return Response(service_list)

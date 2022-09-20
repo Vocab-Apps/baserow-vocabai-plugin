@@ -8,7 +8,7 @@ from django.conf import settings
 import redis
 import json
 
-from . import instance as clt_instance
+from . import clt_interface
 from .quotas import QuotaOverUsage
 
 import time
@@ -118,7 +118,7 @@ def run_clt_translation_all_rows(self, table_id, source_language, target_languag
             for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
                 text = getattr(row, source_field_id)
                 if text != None and len(text) > 0:
-                    translated_text = clt_instance.get_translation(text, source_language, target_language, service, usage_user_id)
+                    translated_text = clt_interface.get_translation(text, source_language, target_language, service, usage_user_id)
                     setattr(row, target_field_id, translated_text)
                     row.save()
     except QuotaOverUsage:
@@ -141,7 +141,7 @@ def run_clt_transliteration_all_rows(self, table_id, transliteration_id, source_
             for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
                 text = getattr(row, source_field_id)
                 if text != None and len(text) > 0:
-                    result = clt_instance.get_transliteration(text, transliteration_id, usage_user_id)
+                    result = clt_interface.get_transliteration(text, transliteration_id, usage_user_id)
                     setattr(row, target_field_id, result)
                     row.save()
     except QuotaOverUsage:
@@ -162,7 +162,7 @@ def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_f
             for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
                 text = getattr(row, source_field_id)
                 if text != None and len(text) > 0:
-                    result = clt_instance.get_dictionary_lookup(text, lookup_id, usage_user_id)
+                    result = clt_interface.get_dictionary_lookup(text, lookup_id, usage_user_id)
                     setattr(row, target_field_id, result)
                     row.save()        
     except QuotaOverUsage:
@@ -190,7 +190,7 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task(autoretry_for=(requests.exceptions.ReadTimeout,), retry_kwargs={'max_retries': 5})
 def refresh_cloudlanguagetools_language_data():
     logger.info('refresh_cloudlanguagetools_language_data')
-    manager = clt_instance.get_servicemanager()
+    manager = clt_interface.get_servicemanager()
     language_data = manager.get_language_data_json()
 
     # create redis client

@@ -12,15 +12,15 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-clt_instance = cloudlanguagetools.servicemanager.ServiceManager() 
-clt_instance.configure_default()
+clt_interface = cloudlanguagetools.servicemanager.ServiceManager() 
+clt_interface.configure_default()
 
 redis_url = settings.REDIS_URL
 logger.info(f'connecting to {redis_url}')
 redis_client = redis.Redis.from_url( redis_url )
 
 def get_servicemanager():
-    return clt_instance
+    return clt_interface
 
 def get_language_list():
     redis_key = 'cloudlanguagetools:language_data:language_list'
@@ -58,9 +58,9 @@ def get_translation(text, source_language, target_language, service, usage_user_
     usage_record = get_usage_record(usage_user_id)
     usage_record.check_quota_available()
 
-    translated_text = clt_instance.get_translation(text, service, source_language_key, target_language_key)
+    translated_text = clt_interface.get_translation(text, service, source_language_key, target_language_key)
 
-    character_cost = clt_instance.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)
+    character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)
     usage_record.update_usage(character_cost)
 
     return translated_text
@@ -75,9 +75,9 @@ def get_transliteration(text, transliteration_id, usage_user_id):
     usage_record = get_usage_record(usage_user_id)
     usage_record.check_quota_available()
 
-    translated_text = clt_instance.get_transliteration(text, service, transliteration_key)
+    translated_text = clt_interface.get_transliteration(text, service, transliteration_key)
 
-    character_cost = clt_instance.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+    character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
     usage_record.update_usage(character_cost)
 
     return translated_text    
@@ -93,10 +93,10 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     usage_record.check_quota_available()
 
     try:
-        lookup_result = clt_instance.get_dictionary_lookup(text, service, lookup_key)
+        lookup_result = clt_interface.get_dictionary_lookup(text, service, lookup_key)
 
         # todo: replace by dictionary usage        
-        character_cost = clt_instance.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+        character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
         usage_record.update_usage(character_cost)        
 
         if isinstance(lookup_result, list):

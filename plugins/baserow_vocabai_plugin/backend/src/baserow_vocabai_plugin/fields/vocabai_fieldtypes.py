@@ -15,7 +15,7 @@ from baserow.core.models import GROUP_USER_PERMISSION_ADMIN, GroupUser
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField
 
 from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
-from ..cloudlanguagetools import instance as clt_instance
+from ..cloudlanguagetools import clt_interface
 
 import logging
 logger = logging.getLogger(__name__)
@@ -207,7 +207,7 @@ class TranslationFieldType(TransformationFieldType):
         translation_service = field.service
         if source_value == None or len(source_value) == 0:
             return ''
-        translated_text = clt_instance.get_translation(source_value, source_language, target_language, translation_service, usage_user_id)
+        translated_text = clt_interface.get_translation(source_value, source_language, target_language, translation_service, usage_user_id)
         return translated_text
 
     def row_of_dependency_updated(
@@ -230,7 +230,7 @@ class TranslationFieldType(TransformationFieldType):
                 for row in rows:
                     text = getattr(row, source_internal_field_name)
                     if text != None:
-                        translated_text = clt_instance.get_translation(text, source_language, target_language, translation_service)
+                        translated_text = clt_interface.get_translation(text, source_language, target_language, translation_service)
                         setattr(row, target_internal_field_name, translated_text)
 
             update_collector.add_field_with_pending_update_function(
@@ -323,7 +323,7 @@ class TransliterationFieldType(TransformationFieldType):
 
     def transform_value(self, field, source_value, usage_user_id):
         transliteration_id = field.transliteration_id
-        transliterated_text = clt_instance.get_transliteration(source_value, transliteration_id, usage_user_id)
+        transliterated_text = clt_interface.get_transliteration(source_value, transliteration_id, usage_user_id)
         return transliterated_text
 
     def row_of_dependency_updated(
@@ -345,7 +345,7 @@ class TransliterationFieldType(TransformationFieldType):
                 for row in rows:
                     text = getattr(row, source_internal_field_name)
                     if text != None:
-                        transliterated_text = clt_instance.get_transliteration(text, transliteration_id)
+                        transliterated_text = clt_interface.get_transliteration(text, transliteration_id)
                         setattr(row, target_internal_field_name, transliterated_text)
 
             update_collector.add_field_with_pending_update_function(
@@ -436,7 +436,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
 
     def transform_value(self, field, source_value, usage_user_id):
         lookup_id = field.lookup_id
-        lookup_result = clt_instance.get_dictionary_lookup(source_value, lookup_id, usage_user_id)
+        lookup_result = clt_interface.get_dictionary_lookup(source_value, lookup_id, usage_user_id)
         return lookup_result
 
     def row_of_dependency_updated(
@@ -456,7 +456,7 @@ class DictionaryLookupFieldType(TransformationFieldType):
                 for row in rows:
                     text = getattr(row, source_internal_field_name)
                     if text != None:
-                        lookup_result = clt_instance.get_dictionary_lookup(text, lookup_id)
+                        lookup_result = clt_interface.get_dictionary_lookup(text, lookup_id)
                         setattr(row, target_internal_field_name, lookup_result)
 
             update_collector.add_field_with_pending_update_function(
