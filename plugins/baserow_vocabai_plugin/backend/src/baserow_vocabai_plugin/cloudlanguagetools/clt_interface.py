@@ -5,38 +5,59 @@ import datetime
 import cloudlanguagetools.servicemanager
 
 from .quotas import get_usage_record
-
+from ..fields.vocabai_models import VocabAiLanguageData
 
 from django.conf import settings
 
-
 logger = logging.getLogger(__name__)
 
-clt_interface = cloudlanguagetools.servicemanager.ServiceManager() 
-clt_interface.configure_default()
-
-redis_url = settings.REDIS_URL
-logger.info(f'connecting to {redis_url}')
-redis_client = redis.Redis.from_url( redis_url )
+manager = cloudlanguagetools.servicemanager.ServiceManager() 
+manager.configure_default()
 
 def get_servicemanager():
-    return clt_interface
+    return manager
+
+def update_language_data():
+    logger.info('retrieving language data')
+    language_list = manager.get_language_list()
+    language_data = manager.get_language_data_json_v2()
+
+    language_data_records = VocabAiLanguageData.objects.all()
+    
+    if len(language_data_records) == 1:
+        language_data_record = language_data_records[0]
+    else:
+        # create new record
+        language_data_record = VocabAiLanguageData()
+    
+    # update the record
+    language_data_record.language_list = language_list
+    language_data_record.free_transformation_options = language_data['free']
+    language_data_record.premium_transformation_options = language_data['premium']
+
+    # update database
+    language_data_record.save()
+
+    logger.info('saved language data')
+        
+def get_language_data_record():
+    language_data_records = VocabAiLanguageData.objects.all()
+    if len(language_data_records) != 1:
+        logger.error(f'could not find language data record')
+        return None
+    return language_data_records[0]
 
 def get_language_list():
-    redis_key = 'cloudlanguagetools:language_data:language_list'
-    return json.loads(redis_client.get(redis_key))
+    return get_language_data_record().language_list
 
 def get_translation_options():
-    redis_key = 'cloudlanguagetools:language_data:translation_options'
-    return json.loads(redis_client.get(redis_key))
+    return get_language_data_record().free_transformation_options['translation_options']
 
 def get_transliteration_options():
-    redis_key = 'cloudlanguagetools:language_data:transliteration_options'
-    return json.loads(redis_client.get(redis_key))
+    return get_language_data_record().free_transformation_options['transliteration_options']
 
 def get_dictionary_lookup_options():
-    redis_key = 'cloudlanguagetools:language_data:dictionary_lookup_options'
-    return json.loads(redis_client.get(redis_key))    
+    return get_language_data_record().free_transformation_options['dictionary_lookup_options']
 
 def get_translation_services_source_target_language(source_language, target_language):
     translation_options = get_translation_options()
@@ -58,9 +79,9 @@ def get_translation(text, source_language, target_language, service, usage_user_
     usage_record = get_usage_record(usage_user_id)
     usage_record.check_quota_available()
 
-    translated_text = clt_interface.get_translation(text, service, source_language_key, target_language_key)
+    translated_text = manager.get_translation(text, service, source_language_key, target_language_key)
 
-    character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)
+    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)
     usage_record.update_usage(character_cost)
 
     return translated_text
@@ -75,9 +96,9 @@ def get_transliteration(text, transliteration_id, usage_user_id):
     usage_record = get_usage_record(usage_user_id)
     usage_record.check_quota_available()
 
-    translated_text = clt_interface.get_transliteration(text, service, transliteration_key)
+    translated_text = manager.get_transliteration(text, service, transliteration_key)
 
-    character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
     usage_record.update_usage(character_cost)
 
     return translated_text    
@@ -93,10 +114,10 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     usage_record.check_quota_available()
 
     try:
-        lookup_result = clt_interface.get_dictionary_lookup(text, service, lookup_key)
+        lookup_result = manager.get_dictionary_lookup(text, service, lookup_key)
 
         # todo: replace by dictionary usage        
-        character_cost = clt_interface.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+        character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
         usage_record.update_usage(character_cost)        
 
         if isinstance(lookup_result, list):

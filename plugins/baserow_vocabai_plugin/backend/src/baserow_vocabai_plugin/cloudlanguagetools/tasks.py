@@ -190,17 +190,5 @@ def setup_periodic_tasks(sender, **kwargs):
 @app.task(autoretry_for=(requests.exceptions.ReadTimeout,), retry_kwargs={'max_retries': 5})
 def refresh_cloudlanguagetools_language_data():
     logger.info('refresh_cloudlanguagetools_language_data')
-    manager = clt_interface.get_servicemanager()
-    language_data = manager.get_language_data_json()
-
-    # create redis client
-    redis_url = settings.REDIS_URL
-    logger.info(f'connecting to {redis_url}')
-    r = redis.Redis.from_url( redis_url )
-
-    for key, data in language_data.items():
-        redis_key = f'cloudlanguagetools:language_data:{key}'
-        r.set(redis_key, json.dumps(data))
-
-    r.close()
+    clt_interface.update_language_data()
 

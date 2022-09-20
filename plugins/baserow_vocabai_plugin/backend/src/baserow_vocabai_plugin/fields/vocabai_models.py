@@ -79,6 +79,8 @@ User = get_user_model()
 # =============
 
 class VocabAiLanguageData(models.Model):
+    # primary key whose value dosen't change, to ensure only a single record exists
+    record_key = models.CharField(max_length=100, default='language_record', primary_key=True)
 
     # list of languages, in dictionary format
     language_list = models.JSONField()

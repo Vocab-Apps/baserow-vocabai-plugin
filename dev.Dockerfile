@@ -5,6 +5,8 @@
 # to build:
 # docker-compose -f docker-compose.dev.yml up --build
 # docker-compose -f docker-compose.dev.yml up -d --build
+# (no rebuild)
+# docker-compose -f docker-compose.dev.yml up -d
 # https://baserow.io/docs/plugins/boilerplate
 #
 # attaching to container (for debugging)
