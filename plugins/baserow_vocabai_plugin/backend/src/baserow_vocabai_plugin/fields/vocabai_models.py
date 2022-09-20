@@ -75,6 +75,38 @@ class DictionaryLookupField(Field):
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+# language data
+# =============
+
+class VocabAiLanguageData(models.Model):
+
+    # list of languages, in dictionary format
+    language_list = models.JSONField()
+
+    # free transformation options
+    free_transformation_options = models.JSONField()
+
+    # premium transformation options
+    premium_transformation_options = models.JSONField()
+
+    # keep track of when this record was modified
+    updated_time = models.DateTimeField(auto_now=True)
+
+# user record
+# ===========
+
+# class VocabAiUser(models.Model):
+#     user = models.ForeignKey(
+#         User,
+#         on_delete=models.CASCADE
+#     )
+
+#     # whether the user is a premium user or not
+#     premium = models.BooleanField(default=False)
+
+#     # keep track of when this record was modified
+#     updated_time = models.DateTimeField(auto_now=True)    
+
 # usage tracking
 # ==============
 
