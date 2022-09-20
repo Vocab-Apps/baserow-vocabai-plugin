@@ -1,14 +1,15 @@
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
-index 71879282..3599dc17 100755
+index 71879282..c259be2a 100755
 --- a/backend/docker/docker-entrypoint.sh
 +++ b/backend/docker/docker-entrypoint.sh
-@@ -315,6 +315,10 @@ case "$1" in
+@@ -315,6 +315,11 @@ case "$1" in
        echo "Running celery export worker healthcheck..."
        exec celery -A baserow inspect ping -d "export-worker@$HOSTNAME" -t 10 "${@:2}"
      ;;
 +    celery-cloudlanguagetoolsworker)
-+      echo "Running celery cloudlanguagetools worker..."
-+      start_celery_worker -Q cloudlanguagetools -n cloudlanguagetools-worker@%h "${@:2}"
++      BASEROW_CELERY_CLT_WORKER_NUM=${BASEROW_CELERY_CLT_WORKER_NUM:-2}
++      echo "Running celery cloudlanguagetools worker with ${BASEROW_CELERY_CLT_WORKER_NUM} workers..."
++      start_celery_worker --concurrency ${BASEROW_CELERY_CLT_WORKER_NUM} -Q cloudlanguagetools -n cloudlanguagetools-worker@%h "${@:2}"
 +    ;;    
      celery-beat)
        # Delay the beat startup as there seems to be bug where the other celery workers
