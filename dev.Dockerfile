@@ -37,9 +37,16 @@ RUN groupmod -g $PLUGIN_BUILD_GID baserow_docker_group && usermod -u $PLUGIN_BUI
 # install ubuntu packages
 RUN apt-get update && apt-get install -y --no-install-recommends wget
 
+# change ownership of python packages
+RUN chown -R baserow_docker_user:baserow_docker_group /baserow/venv
+
 # Install your dev dependencies manually.
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/dev.txt /tmp/plugin-dev-requirements.txt
-RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt
+RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt && chown -R baserow_docker_user:baserow_docker_group /baserow/venv
+
+# install python packages (docker caching optimization)
+COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/base.txt /tmp/plugin-base-requirements.txt
+RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-base-requirements.txt && chown -R baserow_docker_user:baserow_docker_group /baserow/venv
 
 # install plugin
 
