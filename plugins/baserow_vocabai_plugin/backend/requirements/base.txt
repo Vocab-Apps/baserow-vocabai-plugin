@@ -22,11 +22,11 @@ cffi==1.15.1
     # via cryptography
 charset-normalizer==2.1.1
     # via requests
-cloudlanguagetools==3.1
+cloudlanguagetools==3.2
     # via -r base.in
 clt-requirements==0.2
     # via cloudlanguagetools
-clt-wenlin==0.8
+clt-wenlin==0.9
     # via cloudlanguagetools
 cryptography==38.0.1
     # via clt-requirements
