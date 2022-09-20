@@ -19,9 +19,9 @@
 # docker-compose -f docker-compose.dev.yml down -v
 
 
-FROM baserow/baserow:1.12.0 as base
+FROM lucwastiaux/baserow-clt:1.12.0-3.2-B as base
 
-FROM baserow/baserow:1.12.0
+FROM lucwastiaux/baserow-clt:1.12.0-3.2-B
 
 ARG PLUGIN_BUILD_UID
 ENV PLUGIN_BUILD_UID=${PLUGIN_BUILD_UID:-9999}
@@ -34,19 +34,12 @@ COPY --from=base --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID /baserow /baserow
 
 RUN groupmod -g $PLUGIN_BUILD_GID baserow_docker_group && usermod -u $PLUGIN_BUILD_UID $DOCKER_USER
 
-# install ubuntu packages
-RUN apt-get update && apt-get install -y --no-install-recommends wget
-
 # change ownership of python packages
 RUN chown -R baserow_docker_user:baserow_docker_group /baserow/venv
 
 # Install your dev dependencies manually.
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/dev.txt /tmp/plugin-dev-requirements.txt
 RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt && chown -R baserow_docker_user:baserow_docker_group /baserow/venv
-
-# install python packages (docker caching optimization)
-COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/base.txt /tmp/plugin-base-requirements.txt
-RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-base-requirements.txt && chown -R baserow_docker_user:baserow_docker_group /baserow/venv
 
 # install plugin
 
