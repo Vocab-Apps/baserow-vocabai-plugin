@@ -33,19 +33,20 @@ class UsageRecord():
             raise QuotaOverUsage('Daily', self.daily_usage_record.characters, FREE_ACCOUNT_DAILY_MAX_CHARACTERS)
 
     def update_usage(self, character_cost):
-        self.daily_usage_record.characters = self.daily_usage_record.characters + character_cost
-        self.monthly_usage_record.characters = self.monthly_usage_record.characters + character_cost
+        if character_cost > 0:
+            self.daily_usage_record.characters = self.daily_usage_record.characters + character_cost
+            self.monthly_usage_record.characters = self.monthly_usage_record.characters + character_cost
 
-        self.daily_usage_record.save()
-        self.monthly_usage_record.save()
+            self.daily_usage_record.save()
+            self.monthly_usage_record.save()
 
-        self.log_usage()
+            self.log_usage()
 
     def log_usage(self):
         user = self.daily_usage_record.user
         daily = self.daily_usage_record
         monthly = self.monthly_usage_record
-        logger.info(f'usage for {user}, daily/{daily.period_time}: {daily.characters} characters, monthly/{monthly.period_time}: {monthly.characters} characters')
+        logger.debug(f'usage for {user}, daily/{daily.period_time}: {daily.characters} characters, monthly/{monthly.period_time}: {monthly.characters} characters')
 
 def get_usage_record(usage_user_id):
     # locate user
