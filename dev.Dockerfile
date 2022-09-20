@@ -34,12 +34,9 @@ COPY --from=base --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID /baserow /baserow
 
 RUN groupmod -g $PLUGIN_BUILD_GID baserow_docker_group && usermod -u $PLUGIN_BUILD_UID $DOCKER_USER
 
-# change ownership of python packages
-RUN chown -R baserow_docker_user:baserow_docker_group /baserow/venv
-
 # Install your dev dependencies manually.
 COPY --chown=$PLUGIN_BUILD_UID:$PLUGIN_BUILD_GID ./plugins/baserow_vocabai_plugin/backend/requirements/dev.txt /tmp/plugin-dev-requirements.txt
-RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt && chown -R baserow_docker_user:baserow_docker_group /baserow/venv
+RUN . /baserow/venv/bin/activate && pip3 install -r /tmp/plugin-dev-requirements.txt
 
 # install plugin
 
