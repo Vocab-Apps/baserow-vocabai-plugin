@@ -19,6 +19,10 @@
 # docker-compose -f docker-compose.dev.yml down
 # bring down and clear volumes:
 # docker-compose -f docker-compose.dev.yml down -v
+#
+# to restart
+# ==========
+# docker-compose -f docker-compose.dev.yml restart
 
 
 FROM lucwastiaux/baserow-clt:1.12.0-3.4 as base

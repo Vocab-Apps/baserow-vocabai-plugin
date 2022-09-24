@@ -185,10 +185,30 @@ def setup_periodic_tasks(sender, **kwargs):
     # run once at startup
     refresh_cloudlanguagetools_language_data.delay()
 
+    collect_user_data.delay()
+
 
 # we want to auto-retry on requests.exceptions.ReadTimeout
-@app.task(autoretry_for=(requests.exceptions.ReadTimeout,), retry_kwargs={'max_retries': 5})
+@app.task(autoretry_for=(requests.exceptions.ReadTimeout,), retry_kwargs={'max_retries': 5}, queue='cloudlanguagetools')
 def refresh_cloudlanguagetools_language_data():
     logger.info('refresh_cloudlanguagetools_language_data')
     clt_interface.update_language_data()
+
+
+# collecting user data
+# ====================
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+@app.task(queue='export')
+def collect_user_data():
+    logger.info('collect_user_data')
+
+    user_list = User.objects.all()
+    for user in user_list:
+        # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
+        logger.info(f'user: {user} username: {user.username}')
+
+    
 
