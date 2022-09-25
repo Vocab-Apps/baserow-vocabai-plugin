@@ -202,6 +202,9 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from ..fields.vocabai_models import VocabAiUsage, USAGE_PERIOD_MONTHLY, USAGE_PERIOD_DAILY
+from baserow.core.models import GroupUser
+from baserow.contrib.database.models import Database
+from baserow.contrib.database.table.models import Table
 
 @app.task(queue='export')
 def collect_user_data():
@@ -210,12 +213,42 @@ def collect_user_data():
     user_list = User.objects.all()
     for user in user_list:
         # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
+        username = user.username
+        last_login = user.last_login
+        date_joined = user.date_joined
         logger.info(f'user: {user} username: {user.username}')
 
         # lookup usage records
         usage_list = VocabAiUsage.objects.filter(user=user)
         for usage in usage_list:
             logger.info(f'usage: {usage} characters: {usage.characters} period: {usage.period} period_time: {usage.period_time}')
+
+        # collect number of groups, tables, rows
+        # need to locate GroupUser instances
+        group_user_list = GroupUser.objects.filter(user=user)
+        group_count = 0
+        database_count = 0
+        table_count = 0
+        row_count = 0
+        for group_user in group_user_list:
+            logger.info(f'group_user: {group_user} group: {group_user.group}')
+            group_count += 1
+            # find all the databases in that group
+            database_list = Database.objects.filter(group=group_user.group)
+            for database in database_list:
+                logger.info(f'database: {database}')
+                database_count += 1
+                # find all of the tables in that database
+                table_list = Table.objects.filter(database=database)
+                for table in table_list:
+                    table_count += 1
+                    row_count += table.get_model(field_ids=[]).objects.count()
+
+        logger.info(f'user stats: last_login: {last_login} databases: {database_count} tables: {table_count} rows: {row_count}')
+
+
+
+
 
 
     
