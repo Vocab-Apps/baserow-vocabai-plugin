@@ -14,6 +14,7 @@ from .quotas import QuotaOverUsage
 import os
 import time
 import requests
+import pprint
 
 import logging
 logger = logging.getLogger(__name__)
@@ -212,13 +213,17 @@ def collect_user_data():
     logger.info('collect_user_data')
 
     base_url = os.environ['BASEROW_USER_STATS_URL']
+    token = os.environ['BASEROW_USER_STATS_TOKEN']
 
     user_list = User.objects.all()
+
+    user_record_list = []
+
     for user in user_list:
         # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
         username = user.username
-        last_login = user.last_login
-        date_joined = user.date_joined
+        last_login = user.last_login.isoformat()
+        date_joined = user.date_joined.strftime('%Y-%m-%d')
         logger.info(f'user: {user} username: {user.username}')
 
         # lookup usage records
@@ -250,6 +255,77 @@ def collect_user_data():
         logger.info(f'user stats: last_login: {last_login} databases: {database_count} tables: {table_count} rows: {row_count}')
         logger.info(f'BASEROW_USER_STATS_URL: {base_url}')
 
+        user_record_list.append({
+            'username': username,
+            'last_login': last_login,
+            'date_joined': date_joined,
+            'table_count': table_count,
+            'row_count': row_count
+        })
+    
+    # upload to baserow
+    # =================
+
+    # retrieve records first
+    response = requests.get(
+        f"{base_url}/?user_field_names=true",
+        headers={
+            "Authorization": f"Token {token}"
+        }
+    )    
+    
+    records = response.json()['results']
+    baserow_username_to_id_map = {}
+    for record in records:
+        baserow_username_to_id_map[record['username']] = record['id']
+
+
+    # determine which records need to be inserted or updated
+    record_updates = []
+    record_inserts = []
+    for user_record in user_record_list:
+        username = user_record['username']
+        if username in baserow_username_to_id_map:
+            # update
+            update_record = user_record
+            update_record['id'] = baserow_username_to_id_map[username]
+            record_updates.append(update_record)
+        else:
+            # insert
+            record_inserts.append(user_record)
+    
+    # do inserts
+    pprint.pprint(record_inserts)
+    response = requests.post(
+        f"{base_url}/batch/?user_field_names=true",
+        headers={
+            "Authorization": f"Token {token}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "items": record_inserts
+        }
+    )    
+    if response.status_code != 200:
+        logger.error(response.content)
+
+    # do updates
+    pprint.pprint(record_updates)
+    response = requests.patch(
+        f"{base_url}/batch/?user_field_names=true",
+        headers={
+            "Authorization": f"Token {token}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "items": record_updates
+        }
+    )    
+    if response.status_code != 200:
+        logger.error(response.content)    
+
+
+    #pprint.pprint(records)
 
 
 
