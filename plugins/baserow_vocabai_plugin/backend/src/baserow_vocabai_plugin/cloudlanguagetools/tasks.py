@@ -201,6 +201,8 @@ def refresh_cloudlanguagetools_language_data():
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
+from ..fields.vocabai_models import VocabAiUsage, USAGE_PERIOD_MONTHLY, USAGE_PERIOD_DAILY
+
 @app.task(queue='export')
 def collect_user_data():
     logger.info('collect_user_data')
@@ -209,6 +211,12 @@ def collect_user_data():
     for user in user_list:
         # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
         logger.info(f'user: {user} username: {user.username}')
+
+        # lookup usage records
+        usage_list = VocabAiUsage.objects.filter(user=user)
+        for usage in usage_list:
+            logger.info(f'usage: {usage} characters: {usage.characters} period: {usage.period} period_time: {usage.period_time}')
+
 
     
 
