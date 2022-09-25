@@ -11,6 +11,7 @@ import json
 from . import clt_interface
 from .quotas import QuotaOverUsage
 
+import os
 import time
 import requests
 
@@ -210,6 +211,8 @@ from baserow.contrib.database.table.models import Table
 def collect_user_data():
     logger.info('collect_user_data')
 
+    base_url = os.environ['BASEROW_USER_STATS_URL']
+
     user_list = User.objects.all()
     for user in user_list:
         # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
@@ -245,6 +248,7 @@ def collect_user_data():
                     row_count += table.get_model(field_ids=[]).objects.count()
 
         logger.info(f'user stats: last_login: {last_login} databases: {database_count} tables: {table_count} rows: {row_count}')
+        logger.info(f'BASEROW_USER_STATS_URL: {base_url}')
 
 
 

@@ -26,6 +26,8 @@ services:
       BASEROW_CELERY_EXPORT_WORKER_STARTUP_COMMAND: celery-exportworker
       BASEROW_CELERY_CLT_WORKER_NUM: 3
       # BASEROW_AMOUNT_OF_WORKERS: 2
+      BASEROW_USER_STATS_TOKEN: ${BASEROW_USER_STATS_TOKEN}
+      BASEROW_USER_STATS_URL: ${BASEROW_USER_STATS_URL}
     volumes:
       - baserow_data:/baserow/data
       - ./plugins/baserow_vocabai_plugin/backend:/baserow/data/plugins/baserow_vocabai_plugin/backend
