@@ -295,34 +295,36 @@ def collect_user_data():
             record_inserts.append(user_record)
     
     # do inserts
-    pprint.pprint(record_inserts)
-    response = requests.post(
-        f"{base_url}/batch/?user_field_names=true",
-        headers={
-            "Authorization": f"Token {token}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "items": record_inserts
-        }
-    )    
-    if response.status_code != 200:
-        logger.error(response.content)
+    if len(record_inserts) > 0:
+        pprint.pprint(record_inserts)
+        response = requests.post(
+            f"{base_url}/batch/?user_field_names=true",
+            headers={
+                "Authorization": f"Token {token}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "items": record_inserts
+            }
+        )    
+        if response.status_code != 200:
+            logger.error(response.content)
 
     # do updates
-    pprint.pprint(record_updates)
-    response = requests.patch(
-        f"{base_url}/batch/?user_field_names=true",
-        headers={
-            "Authorization": f"Token {token}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "items": record_updates
-        }
-    )    
-    if response.status_code != 200:
-        logger.error(response.content)    
+    if len(record_updates) > 0:
+        pprint.pprint(record_updates)
+        response = requests.patch(
+            f"{base_url}/batch/?user_field_names=true",
+            headers={
+                "Authorization": f"Token {token}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "items": record_updates
+            }
+        )    
+        if response.status_code != 200:
+            logger.error(response.content)    
 
 
     #pprint.pprint(records)
