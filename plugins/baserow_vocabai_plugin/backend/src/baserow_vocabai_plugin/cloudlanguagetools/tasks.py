@@ -212,8 +212,10 @@ from baserow.contrib.database.table.models import Table
 def collect_user_data():
     logger.info('collect_user_data')
 
-    base_url = os.environ['BASEROW_USER_STATS_URL']
-    token = os.environ['BASEROW_USER_STATS_TOKEN']
+    base_url = os.environ.get('BASEROW_USER_STATS_URL', None)
+    token = os.environ.get('BASEROW_USER_STATS_TOKEN', None)
+    if base_url == None or token == None:
+        logger.info(f'BASEROW_USER_STATS_URL or BASEROW_USER_STATS_TOKEN must be set in order to collect user data')
 
     user_list = User.objects.all()
 
