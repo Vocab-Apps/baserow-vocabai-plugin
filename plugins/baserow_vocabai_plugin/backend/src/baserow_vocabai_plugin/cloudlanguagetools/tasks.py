@@ -222,7 +222,9 @@ def collect_user_data():
     for user in user_list:
         # user model: https://docs.djangoproject.com/en/4.1/ref/contrib/auth/
         username = user.username
-        last_login = user.last_login.isoformat()
+        last_login = None
+        if user.last_login != None:
+            last_login = user.last_login.isoformat()
         date_joined = user.date_joined.strftime('%Y-%m-%d')
         logger.info(f'user: {user} username: {user.username}')
 
