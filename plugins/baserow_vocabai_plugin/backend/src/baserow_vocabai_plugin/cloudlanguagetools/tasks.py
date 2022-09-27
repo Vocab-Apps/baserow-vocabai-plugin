@@ -187,6 +187,9 @@ def setup_periodic_tasks(sender, **kwargs):
     # run once at startup
     refresh_cloudlanguagetools_language_data.delay()
 
+    sender.add_periodic_task(period, collect_user_data.s(), name='collect user data')
+
+    # run once at startup
     collect_user_data.delay()
 
 
@@ -300,7 +303,7 @@ def collect_user_data():
     
     # do inserts
     if len(record_inserts) > 0:
-        pprint.pprint(record_inserts)
+        # pprint.pprint(record_inserts)
         response = requests.post(
             f"{base_url}/batch/?user_field_names=true",
             headers={
@@ -316,7 +319,7 @@ def collect_user_data():
 
     # do updates
     if len(record_updates) > 0:
-        pprint.pprint(record_updates)
+        # pprint.pprint(record_updates)
         response = requests.patch(
             f"{base_url}/batch/?user_field_names=true",
             headers={
