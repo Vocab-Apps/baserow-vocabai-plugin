@@ -20,6 +20,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
+      SENTRY_ENVIRONMENT: development
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL}
       CLOUDLANGUAGETOOLS_CORE_KEY: ${CLOUDLANGUAGETOOLS_CORE_KEY}
       BASEROW_CELERY_WORKER_STARTUP_COMMAND: celery-worker
