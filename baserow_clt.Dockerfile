@@ -9,4 +9,4 @@ RUN apt-get update -y && apt-get install -y libasound2 build-essential wget
 RUN wget http://tts.speech.cs.cmu.edu/awb/flite-2.0.5-current.tar.bz2 && tar xvjf flite-2.0.5-current.tar.bz2 && cd flite-2.0.5-current && ./configure && make && make install && cd testsuite && make lex_lookup && cp lex_lookup /usr/local/bin
 
 RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk==1.9.8 && pip3 cache purge
-RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==3.4 && pip3 cache purge
+RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==3.6 && pip3 cache purge
