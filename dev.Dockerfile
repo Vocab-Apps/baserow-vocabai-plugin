@@ -25,9 +25,9 @@
 # docker-compose -f docker-compose.dev.yml restart
 
 
-FROM lucwastiaux/baserow-clt:1.12.0-3.4 as base
+FROM lucwastiaux/baserow-clt:1.12.0-3.6 as base
 
-FROM lucwastiaux/baserow-clt:1.12.0-3.4
+FROM lucwastiaux/baserow-clt:1.12.0-3.6
 
 ARG PLUGIN_BUILD_UID
 ENV PLUGIN_BUILD_UID=${PLUGIN_BUILD_UID:-9999}
