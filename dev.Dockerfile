@@ -1,29 +1,5 @@
 # This a dev image for testing your plugin when installed into the Baserow all-in-one image
 
-# to start up in dev:
-# docker-compose -f docker-compose.dev.yml up
-# to build:
-# docker-compose -f docker-compose.dev.yml up --build
-# docker-compose -f docker-compose.dev.yml up -d --build
-# (no rebuild)
-# docker-compose -f docker-compose.dev.yml up -d
-# https://baserow.io/docs/plugins/boilerplate
-#
-# attaching to container (for debugging)
-# docker exec -it baserow-vocabai-plugin bash
-#
-# following logs:
-# docker logs --since 1h -f baserow-vocabai-plugin
-# 
-# to bring down
-# docker-compose -f docker-compose.dev.yml down
-# bring down and clear volumes:
-# docker-compose -f docker-compose.dev.yml down -v
-#
-# to restart
-# ==========
-# docker-compose -f docker-compose.dev.yml restart
-
 
 FROM lucwastiaux/baserow-clt:1.12.0-3.6 as base
 
