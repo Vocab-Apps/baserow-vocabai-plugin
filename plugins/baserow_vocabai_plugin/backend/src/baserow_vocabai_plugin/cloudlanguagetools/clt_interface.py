@@ -43,8 +43,7 @@ def update_language_data():
 def get_language_data_record():
     language_data_records = VocabAiLanguageData.objects.all()
     if len(language_data_records) != 1:
-        logger.error(f'could not find language data record')
-        return None
+        raise Exception(f'could not find language data record')
     return language_data_records[0]
 
 def get_language_list():
