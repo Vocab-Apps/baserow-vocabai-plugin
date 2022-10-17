@@ -5,7 +5,7 @@ from .views import CloudLanguageToolsLanguageList, CloudLanguageToolsTranslation
 app_name = "baserow_vocabai_plugin.api"
 
 urlpatterns = [
-    re_path(r"language_list/$", CloudLanguageToolsLanguageList.as_view(), name="list"),
+    re_path(r"language_list/$", CloudLanguageToolsLanguageList.as_view(), name="language-list"),
     re_path(r"translation_options/$", CloudLanguageToolsTranslationOptions.as_view(), name="list"),
     re_path(r"transliteration_options/$", CloudLanguageToolsTransliterationOptions.as_view(), name="list"),
     re_path(r"dictionary_lookup_options/$", CloudLanguageToolsDictionaryLookupOptions.as_view(), name="list"),
