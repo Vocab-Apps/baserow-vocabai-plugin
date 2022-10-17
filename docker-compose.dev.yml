@@ -17,8 +17,11 @@ services:
         PLUGIN_BUILD_UID: $PLUGIN_BUILD_UID
         PLUGIN_BUILD_GID: $PLUGIN_BUILD_GID
     ports:
-      - "80:80"
-      - "443:443"
+      # note: the caddy server inside the docker container will always bind to port 80 and 443
+      # so leave the container side unchanged
+      # BASEROW_PUBLIC_URL should be http://localhost:8000
+      - "8000:80"
+      - "8443:443"
     environment:
       SENTRY_ENVIRONMENT: development
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL}
