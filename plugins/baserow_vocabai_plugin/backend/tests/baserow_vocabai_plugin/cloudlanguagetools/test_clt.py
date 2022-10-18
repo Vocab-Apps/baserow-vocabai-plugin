@@ -4,9 +4,11 @@ from rest_framework.status import HTTP_200_OK
 
 from baserow_vocabai_plugin.cloudlanguagetools import clt_interface
 
+# tests need to be run with LOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes
+
 
 @pytest.mark.django_db
-def test_1(api_client, data_fixture):
+def test_language_data(api_client, data_fixture):
     user, token = data_fixture.create_user_and_token()
 
     # update language data first
@@ -18,3 +20,8 @@ def test_1(api_client, data_fixture):
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
     assert response.status_code == HTTP_200_OK
+
+    # verify some things
+    language_list = response.data
+    assert 'fr' in language_list
+    assert language_list['fr'] == 'French'
