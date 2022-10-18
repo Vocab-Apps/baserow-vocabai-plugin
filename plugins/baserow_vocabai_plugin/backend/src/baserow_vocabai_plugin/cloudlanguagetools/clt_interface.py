@@ -50,13 +50,13 @@ def get_language_list():
     return get_language_data_record().language_list
 
 def get_translation_options():
-    return get_language_data_record().free_transformation_options['translation_options']
+    return get_language_data_record().premium_transformation_options['translation_options']
 
 def get_transliteration_options():
-    return get_language_data_record().free_transformation_options['transliteration_options']
+    return get_language_data_record().premium_transformation_options['transliteration_options']
 
 def get_dictionary_lookup_options():
-    return get_language_data_record().free_transformation_options['dictionary_lookup_options']
+    return get_language_data_record().premium_transformation_options['dictionary_lookup_options']
 
 def get_translation_services_source_target_language(source_language, target_language):
     translation_options = get_translation_options()
