@@ -49,3 +49,14 @@ def test_quotas(api_client, data_fixture):
     translation_result_str = clt_interface.get_translation('yoyo', 'fr', 'en', 'TestServiceB', user.id)
     quotas.get_usage_record(user.id).monthly_usage_record.characters == 4
     quotas.get_usage_record(user.id).daily_usage_record.characters == 4   
+
+    # log some usage, exceeding the daily quota
+    quotas.get_usage_record(user.id).update_usage(quotas.FREE_ACCOUNT_DAILY_MAX_CHARACTERS - 3)
+
+    # the free option should go through
+    translation_result_str = clt_interface.get_translation('yoyo2', 'fr', 'en', 'TestServiceA', user.id)
+
+    # the premium option should be blocked, should raise QuotaOverUsage
+    with pytest.raises(quotas.QuotaOverUsage) as quota_exception:
+        translation_result_str = clt_interface.get_translation('yoyo3', 'fr', 'en', 'TestServiceB', user.id)
+
