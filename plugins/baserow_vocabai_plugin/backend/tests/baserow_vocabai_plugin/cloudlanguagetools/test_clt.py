@@ -1,4 +1,5 @@
 import pytest
+import json
 from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
@@ -34,8 +35,17 @@ def test_quotas(api_client, data_fixture):
     # update language data first
     clt_interface.update_language_data()
 
-    # update usage record
+    # verify initial usage record
     usage_record = quotas.get_usage_record(user.id)
     assert usage_record.monthly_usage_record.characters == 0
     assert usage_record.daily_usage_record.characters == 0
-    # quotas.log_usage
+    
+    # transformations on free and premium services should be allowed
+    translation_result_str = clt_interface.get_translation('yoyo', 'fr', 'en', 'TestServiceA', user.id)
+    # usage should still be zero
+    quotas.get_usage_record(user.id).monthly_usage_record.characters == 0
+    quotas.get_usage_record(user.id).daily_usage_record.characters == 0
+    # run transformation on premium service
+    translation_result_str = clt_interface.get_translation('yoyo', 'fr', 'en', 'TestServiceB', user.id)
+    quotas.get_usage_record(user.id).monthly_usage_record.characters == 4
+    quotas.get_usage_record(user.id).daily_usage_record.characters == 4   
