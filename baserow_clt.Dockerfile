@@ -1,5 +1,5 @@
-# docker build -t lucwastiaux/baserow-clt:1.12.0-3.7 -f baserow_clt.Dockerfile .
-# docker push lucwastiaux/baserow-clt:1.12.0-3.7
+# docker build -t lucwastiaux/baserow-clt:1.12.0-3.8 -f baserow_clt.Dockerfile .
+# docker push lucwastiaux/baserow-clt:1.12.0-3.8
 
 FROM baserow/baserow:1.12.0
 
@@ -9,4 +9,4 @@ RUN apt-get update -y && apt-get install -y libasound2 build-essential wget
 RUN wget http://tts.speech.cs.cmu.edu/awb/flite-2.0.5-current.tar.bz2 && tar xvjf flite-2.0.5-current.tar.bz2 && cd flite-2.0.5-current && ./configure && make && make install && cd testsuite && make lex_lookup && cp lex_lookup /usr/local/bin
 
 RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk==1.9.8 && pip3 cache purge
-RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==3.7 && pip3 cache purge
+RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==3.8 && pip3 cache purge
