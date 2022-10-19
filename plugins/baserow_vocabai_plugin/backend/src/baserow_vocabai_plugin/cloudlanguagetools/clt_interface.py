@@ -76,11 +76,13 @@ def get_translation(text, source_language, target_language, service, usage_user_
     target_language_key = target_language_options[0]['language_id']
 
     usage_record = get_usage_record(usage_user_id)
-    usage_record.check_quota_available()
+    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)    
+    logger.debug(f'character_cost: {character_cost}, service: {service}')
+    usage_record.check_quota_available(character_cost)
 
     translated_text = manager.get_translation(text, service, source_language_key, target_language_key)
 
-    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.translation)
+
     usage_record.update_usage(character_cost)
 
     return translated_text
@@ -93,11 +95,12 @@ def get_transliteration(text, transliteration_id, usage_user_id):
     transliteration_key = transliteration_option[0]['transliteration_key']
 
     usage_record = get_usage_record(usage_user_id)
-    usage_record.check_quota_available()
+    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+    usage_record.check_quota_available(character_cost)
 
     translated_text = manager.get_transliteration(text, service, transliteration_key)
 
-    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
+
     usage_record.update_usage(character_cost)
 
     return translated_text    
@@ -110,13 +113,12 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
     lookup_key = lookup_option[0]['lookup_key']
 
     usage_record = get_usage_record(usage_user_id)
-    usage_record.check_quota_available()
+    character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.dictionary)
+    usage_record.check_quota_available(character_cost)
 
     try:
         lookup_result = manager.get_dictionary_lookup(text, service, lookup_key)
 
-        # todo: replace by dictionary usage        
-        character_cost = manager.service_cost(text, service, cloudlanguagetools.constants.RequestType.transliteration)
         usage_record.update_usage(character_cost)        
 
         if isinstance(lookup_result, list):

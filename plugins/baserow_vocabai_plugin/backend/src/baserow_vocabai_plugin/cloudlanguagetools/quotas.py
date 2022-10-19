@@ -26,11 +26,12 @@ class UsageRecord():
         self.monthly_usage_record = monthly_usage_record
         self.daily_usage_record = daily_usage_record        
 
-    def check_quota_available(self):
-        if self.monthly_usage_record.characters > FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS:
-            raise QuotaOverUsage('Monthly', self.monthly_usage_record.characters, FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS)
-        if self.daily_usage_record.characters > FREE_ACCOUNT_DAILY_MAX_CHARACTERS:
-            raise QuotaOverUsage('Daily', self.daily_usage_record.characters, FREE_ACCOUNT_DAILY_MAX_CHARACTERS)
+    def check_quota_available(self, characters):
+        if characters > 0:
+            if self.monthly_usage_record.characters + characters > FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS:
+                raise QuotaOverUsage('Monthly', self.monthly_usage_record.characters, FREE_ACCOUNT_MONTHLY_MAX_CHARACTERS)
+            if self.daily_usage_record.characters + characters > FREE_ACCOUNT_DAILY_MAX_CHARACTERS:
+                raise QuotaOverUsage('Daily', self.daily_usage_record.characters, FREE_ACCOUNT_DAILY_MAX_CHARACTERS)
 
     def update_usage(self, character_cost):
         if character_cost > 0:
