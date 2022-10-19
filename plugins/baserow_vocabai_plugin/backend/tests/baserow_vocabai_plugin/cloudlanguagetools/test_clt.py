@@ -1,5 +1,6 @@
 import pytest
 import json
+import os
 from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
@@ -30,6 +31,8 @@ def test_language_data(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_quotas(api_client, data_fixture):
+    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
+
     user, token = data_fixture.create_user_and_token()
 
     # update language data first
