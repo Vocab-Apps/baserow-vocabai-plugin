@@ -15,10 +15,10 @@ index 71879282..c259be2a 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index ddaf9f88..cb18d653 100644
+index ddaf9f88..66434b3e 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
-@@ -11,6 +11,29 @@ from corsheaders.defaults import default_headers
+@@ -11,6 +11,28 @@ from corsheaders.defaults import default_headers
  
  from baserow.version import VERSION
  
@@ -29,17 +29,16 @@ index ddaf9f88..cb18d653 100644
 +from sentry_sdk.integrations.django import DjangoIntegration
 +from sentry_sdk.integrations.celery import CeleryIntegration
 +
-+def sentry_filter_transactions(event, hint):
-+    if event['transaction'] == '/_health/':
-+        return None
-+    return event
++def traces_sampler(sampling_context):
++    if sampling_context.get('asgi_scope', {}).get('path', None) == '/_health/':
++        return 0.0
++    return 1.0
 +
 +sentry_sdk.init(
 +    dsn="https://f7a7fa7dfe5f412f852c3bfe2defa091@o968582.ingest.sentry.io/6742581",
 +    integrations=[DjangoIntegration(), CeleryIntegration()],
-+    traces_sample_rate=1.0,
 +    send_default_pii=True,
-+    before_send=sentry_filter_transactions
++    traces_sampler=traces_sampler,
 +)
 +
 +# sentry setup end
@@ -48,7 +47,7 @@ index ddaf9f88..cb18d653 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -136,6 +159,8 @@ CELERY_TASK_ROUTES = {
+@@ -136,6 +158,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
