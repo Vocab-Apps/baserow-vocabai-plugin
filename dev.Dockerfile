@@ -1,9 +1,9 @@
 # This a dev image for testing your plugin when installed into the Baserow all-in-one image
 
 
-FROM lucwastiaux/baserow-clt:1.12.0-3.9 as base
+FROM lucwastiaux/baserow-clt:1.12.0-3.9-a as base
 
-FROM lucwastiaux/baserow-clt:1.12.0-3.9
+FROM lucwastiaux/baserow-clt:1.12.0-3.9-a
 
 ARG PLUGIN_BUILD_UID
 ENV PLUGIN_BUILD_UID=${PLUGIN_BUILD_UID:-9999}
