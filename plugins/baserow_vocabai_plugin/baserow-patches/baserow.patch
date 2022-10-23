@@ -15,13 +15,15 @@ index 71879282..c259be2a 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index ddaf9f88..66434b3e 100644
+index ddaf9f88..d14e6f2e 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
-@@ -11,6 +11,28 @@ from corsheaders.defaults import default_headers
+@@ -11,6 +11,45 @@ from corsheaders.defaults import default_headers
  
  from baserow.version import VERSION
  
++import pprint
++
 +# sentry setup
 +# ============
 +
@@ -30,8 +32,23 @@ index ddaf9f88..66434b3e 100644
 +from sentry_sdk.integrations.celery import CeleryIntegration
 +
 +def traces_sampler(sampling_context):
++    # this one appears very frequently
 +    if sampling_context.get('asgi_scope', {}).get('path', None) == '/_health/':
-+        return 0.0
++        return 0.001
++        
++    # the following are quite frequent
++    celery_task_name = sampling_context.get('celery_job', {}).get('task', None)
++    if celery_task_name in [
++        'baserow.core.jobs.tasks.clean_up_jobs',
++        'baserow.core.action.tasks.cleanup_old_actions',
++        'baserow.core.trash.tasks.mark_old_trash_for_permanent_deletion',
++        'baserow.core.trash.tasks.permanently_delete_marked_trash',
++        'baserow.contrib.database.export.tasks.clean_up_old_jobs'
++    ]:
++        return 0.1
++
++    # if more information is needed about transactions, uncomment the following
++    #pprint.pprint(sampling_context, width=2000, compact=True)
 +    return 1.0
 +
 +sentry_sdk.init(
@@ -47,7 +64,7 @@ index ddaf9f88..66434b3e 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -136,6 +158,8 @@ CELERY_TASK_ROUTES = {
+@@ -136,6 +175,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
