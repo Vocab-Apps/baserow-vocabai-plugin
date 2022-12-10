@@ -15,10 +15,10 @@ index 71879282..c259be2a 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index ddaf9f88..d14e6f2e 100644
+index c2624439..7431c79d 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
-@@ -11,6 +11,45 @@ from corsheaders.defaults import default_headers
+@@ -13,6 +13,45 @@ from corsheaders.defaults import default_headers
  
  from baserow.version import VERSION
  
@@ -64,7 +64,7 @@ index ddaf9f88..d14e6f2e 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -136,6 +175,8 @@ CELERY_TASK_ROUTES = {
+@@ -140,6 +179,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
@@ -74,7 +74,7 @@ index ddaf9f88..d14e6f2e 100644
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
-index 41f8dc1b..79644711 100755
+index c25910a9..75093c68 100755
 --- a/supervisor/default_baserow_env.sh
 +++ b/supervisor/default_baserow_env.sh
 @@ -74,6 +74,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
@@ -110,13 +110,13 @@ index 0856cd2f..a2d9f791 100644
  user=%(ENV_DOCKER_USER)s
  directory=/baserow/backend
 diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
-index 8a5a4a22..9b12d3c3 100644
+index ce61a5a1..79147120 100644
 --- a/web-frontend/config/nuxt.config.base.js
 +++ b/web-frontend/config/nuxt.config.base.js
-@@ -19,11 +19,22 @@ export default function (
-     base + '/modules/core/module.js',
+@@ -21,11 +21,22 @@ export default function (
      base + '/modules/database/module.js',
      premiumBase + '/modules/baserow_premium/module.js',
+     enterpriseBase + '/modules/baserow_enterprise/module.js',
 +    '@nuxtjs/sentry'
    ]
  
@@ -137,7 +137,7 @@ index 8a5a4a22..9b12d3c3 100644
        extend(config, ctx) {
          config.node = { fs: 'empty' }
 diff --git a/web-frontend/package.json b/web-frontend/package.json
-index 91dceb77..1ed9a6df 100644
+index 2c4c7665..02019c99 100644
 --- a/web-frontend/package.json
 +++ b/web-frontend/package.json
 @@ -45,7 +45,8 @@
