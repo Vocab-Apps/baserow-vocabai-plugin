@@ -1,6 +1,10 @@
 starting up in dev
 ==================
 
+# required env vars
+source ~/.private/vocabai_plugin.sh
+source ~/.private/cloudlanguagetools_core_secret.sh
+
 docker-compose -f docker-compose.dev.yml up
 docker-compose -f docker-compose.dev.yml up -d
 
