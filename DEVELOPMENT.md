@@ -75,3 +75,5 @@ cookiecutter gl:bramw/baserow --directory plugin-boilerplate
 # provide name baserow-plugin-1-13-2
 ```
 then, compare contents in `baserow-plugin-1-13-2` with existing plugin files.
+
+* mass-replace `1.12.0` with `1.13.2`

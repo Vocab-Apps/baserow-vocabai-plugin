@@ -1,7 +1,7 @@
 # docker build -t lucwastiaux/baserow-vocabai-plugin:20220910-1 -f Dockerfile .
 # docker push lucwastiaux/baserow-vocabai-plugin:20220910-1
 
-FROM lucwastiaux/baserow-clt:1.12.0-3.9-b
+FROM lucwastiaux/baserow-clt:1.13.2-3.9-b
 
 ARG SENTRY_RELEASE
 ENV SENTRY_RELEASE=${SENTRY_RELEASE:-baserow-vocabai@0.0.0}
