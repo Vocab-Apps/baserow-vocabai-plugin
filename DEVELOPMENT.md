@@ -2,6 +2,7 @@
 
 ## required env vars
 ```
+source env.dev.sh
 source ~/.private/vocabai_plugin.sh
 source ~/.private/cloudlanguagetools_core_secret.sh
 ```
