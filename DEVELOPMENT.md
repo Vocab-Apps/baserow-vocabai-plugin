@@ -4,19 +4,19 @@
 ```
 source env.dev.sh
 source ~/secrets/cloudlanguagetools/cloudlanguagetools_core_secret.sh
-source ~/secrets/vocabai/dev2.vocab.ai.sh
+source ~/secrets/vocabai/dev.sh
 
 ```
 
 ```
-docker-compose -f docker-compose.dev.yml up
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker-compose.dev.yml up
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 ## to build:
 ```
 docker compose -f docker-compose.dev.yml up --build
-docker-compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 
