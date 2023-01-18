@@ -67,7 +67,7 @@ def test_quotas(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_add_language_field(api_client, data_fixture):
-    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -s --log-cli-level=DEBUG -k test_add_language_field
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_add_language_field
     assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
 
     user, token = data_fixture.create_user_and_token()
@@ -104,36 +104,37 @@ def test_add_language_field(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     json_response = response.json()
     pprint.pprint(json_response)
-    return
 
-    # list tables
-    # ===========
-    url = reverse("api:database:tables:list", kwargs={"database_id": database.id})
-    response = api_client.get(
-        url,
+    # create french language field
+    # ============================
+
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {"name": "french", "type": "language_text", "language": "fr"},
+        format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
+    response_json = response.json()
+    print('response from creating french language field:')
+    pprint.pprint(response_json)
+    french_field_id = response_json['id']
     assert response.status_code == HTTP_200_OK
-    pprint.pprint(response.data)
-    return
 
+    # create english translation field
+    # ================================
 
-    # create group
-    # ============
-    user_group_1 = data_fixture.create_user_group(
-        user=user, order=1, permissions="ADMIN"
-    )
-    data_fixture.create_group()
-
-    # list groups
-    response = api_client.get(
-        reverse("api:groups:list"),
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {"name": "english_trans", "type": "translation", "source_field_id": french_field_id, 'target_language': 'en', 'service': 'ServiceA'},
+        format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
+    response_json = response.json()
+    # pprint.pprint(response_json)
     assert response.status_code == HTTP_200_OK    
-    pprint.pprint(response.data)
 
     return
+
 
     # update language data first
     clt_interface.update_language_data()
@@ -145,6 +146,10 @@ def test_add_language_field(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     # verify some things
     language_list = response.data
-    # pprint.pprint(language_list)
+    pprint.pprint(language_list)
+
+    response = api_client.get(reverse('api:baserow_vocabai_plugin:translation-options'),HTTP_AUTHORIZATION=f"JWT {token}",)
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response.data)
 
     # add a language field
