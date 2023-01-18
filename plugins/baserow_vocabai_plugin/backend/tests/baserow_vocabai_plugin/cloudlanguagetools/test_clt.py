@@ -67,7 +67,7 @@ def test_quotas(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_add_language_field(api_client, data_fixture):
-    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_add_language_field
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -s --log-cli-level=DEBUG -k test_add_language_field
     assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
 
     user, token = data_fixture.create_user_and_token()
@@ -86,6 +86,20 @@ def test_add_language_field(api_client, data_fixture):
     )
     response = api_client.post(
         url, {"name": "test_table_1"}, format="json", HTTP_AUTHORIZATION=f"JWT {token}"
+    )
+    assert response.status_code == HTTP_200_OK
+    json_response = response.json()
+    table_id = json_response['id']
+    pprint.pprint(json_response)
+
+    # list fields in the table
+    # ========================
+
+    url = reverse(
+        "api:database:fields:list", kwargs={"table_id": table_id}
+    )    
+    response = api_client.get(
+        url, HTTP_AUTHORIZATION=f"JWT {token}"
     )
     assert response.status_code == HTTP_200_OK
     json_response = response.json()
