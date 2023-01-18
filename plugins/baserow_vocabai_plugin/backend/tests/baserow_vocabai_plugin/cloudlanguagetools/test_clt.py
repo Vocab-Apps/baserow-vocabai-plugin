@@ -1,6 +1,7 @@
 import pytest
 import json
 import os
+import pprint
 from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
@@ -63,3 +64,73 @@ def test_quotas(api_client, data_fixture):
     with pytest.raises(quotas.QuotaOverUsage) as quota_exception:
         translation_result_str = clt_interface.get_translation('yoyo3', 'fr', 'en', 'TestServiceB', user.id)
 
+
+@pytest.mark.django_db
+def test_add_language_field(api_client, data_fixture):
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_add_language_field
+    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
+
+    user, token = data_fixture.create_user_and_token()
+
+    # create database
+    # ===============
+
+    database = data_fixture.create_database_application(user=user)
+    pprint.pprint(database)
+
+    # create table 
+    # ============
+
+    url = reverse(
+        "api:database:tables:async_create", kwargs={"database_id": database.id}
+    )
+    response = api_client.post(
+        url, {"name": "test_table_1"}, format="json", HTTP_AUTHORIZATION=f"JWT {token}"
+    )
+    assert response.status_code == HTTP_200_OK
+    json_response = response.json()
+    pprint.pprint(json_response)
+    return
+
+    # list tables
+    # ===========
+    url = reverse("api:database:tables:list", kwargs={"database_id": database.id})
+    response = api_client.get(
+        url,
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response.data)
+    return
+
+
+    # create group
+    # ============
+    user_group_1 = data_fixture.create_user_group(
+        user=user, order=1, permissions="ADMIN"
+    )
+    data_fixture.create_group()
+
+    # list groups
+    response = api_client.get(
+        reverse("api:groups:list"),
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK    
+    pprint.pprint(response.data)
+
+    return
+
+    # update language data first
+    clt_interface.update_language_data()
+    
+    response = api_client.get(
+        reverse("api:baserow_vocabai_plugin:language-list"),
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
+    # verify some things
+    language_list = response.data
+    # pprint.pprint(language_list)
+
+    # add a language field
