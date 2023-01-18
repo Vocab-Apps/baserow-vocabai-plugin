@@ -2,6 +2,7 @@ import pytest
 import json
 import os
 import pprint
+import json
 from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
@@ -72,6 +73,13 @@ def test_add_language_field(api_client, data_fixture):
 
     user, token = data_fixture.create_user_and_token()
 
+    # update language data first
+    clt_interface.update_language_data()    
+
+    response = api_client.get(reverse('api:baserow_vocabai_plugin:translation-options'),HTTP_AUTHORIZATION=f"JWT {token}",)
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response.data)    
+
     # create database
     # ===============
 
@@ -125,31 +133,34 @@ def test_add_language_field(api_client, data_fixture):
 
     response = api_client.post(
         reverse("api:database:fields:list", kwargs={"table_id": table_id}),
-        {"name": "english_trans", "type": "translation", "source_field_id": french_field_id, 'target_language': 'en', 'service': 'ServiceA'},
+        {"name": "english_trans", "type": "translation", "source_field_id": french_field_id, 'target_language': 'en', 'service': 'TestServiceA'},
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
     response_json = response.json()
+    english_trans_field_id = response_json['id']
     # pprint.pprint(response_json)
     assert response.status_code == HTTP_200_OK    
 
-    return
 
+    # enter some data in the french field
+    # ===================================
 
-    # update language data first
-    clt_interface.update_language_data()
-    
-    response = api_client.get(
-        reverse("api:baserow_vocabai_plugin:language-list"),
+    response = api_client.post(
+        reverse("api:database:rows:list", kwargs={"table_id": table_id}),
+        {f"field_{french_field_id}": "bonjour"},
+        format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
-    assert response.status_code == HTTP_200_OK
-    # verify some things
-    language_list = response.data
-    pprint.pprint(language_list)
+    response_row = response.json()
+    assert response.status_code == HTTP_200_OK    
 
-    response = api_client.get(reverse('api:baserow_vocabai_plugin:translation-options'),HTTP_AUTHORIZATION=f"JWT {token}",)
-    assert response.status_code == HTTP_200_OK
-    pprint.pprint(response.data)
+    pprint.pprint(response_row)
 
-    # add a language field
+    assert response_row[f'field_{french_field_id}'] == 'bonjour'
+    english_field_data = json.loads(response_row[f'field_{english_trans_field_id}'])
+    assert english_field_data == {
+        "text": "bonjour", "from_language_key": "fr", "to_language_key": 'en'
+    }
+
+    
