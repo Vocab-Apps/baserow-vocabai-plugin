@@ -163,4 +163,24 @@ def test_add_language_field(api_client, data_fixture):
         "text": "bonjour", "from_language_key": "fr", "to_language_key": 'en'
     }
 
-    
+
+@pytest.mark.django_db
+def test_pinyin(api_client, data_fixture):
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin
+    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
+
+    user, token = data_fixture.create_user_and_token()
+
+    # update language data first
+    clt_interface.update_language_data()
+
+    # create database and table
+    # =========================
+
+    database = data_fixture.create_database_application(user=user)
+
+    url = reverse("api:database:tables:async_create", kwargs={"database_id": database.id})
+    response = api_client.post(url, {"name": "test_table_1"}, format="json", HTTP_AUTHORIZATION=f"JWT {token}")
+    assert response.status_code == HTTP_200_OK
+    json_response = response.json()
+    table_id = json_response['id']

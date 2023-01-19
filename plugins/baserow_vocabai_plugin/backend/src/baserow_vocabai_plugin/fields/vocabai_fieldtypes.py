@@ -12,7 +12,7 @@ from baserow.contrib.database.fields.dependencies.models import FieldDependency
 
 from baserow.core.models import GROUP_USER_PERMISSION_ADMIN, GroupUser
 
-from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField
+from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField, ChineseRomanizationField, CHOICE_PINYIN, CHOICE_JYUTPING
 
 from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
 from ..cloudlanguagetools import clt_interface
@@ -492,3 +492,81 @@ class DictionaryLookupFieldType(TransformationFieldType):
                                         target_field_id,
                                         self.get_usage_user_id(field))
 
+class ChineseRomanizationFieldType(TransformationFieldType):
+    type = "chinese_romanization"
+    model_class = ChineseRomanizationField
+    allowed_fields = [
+        'source_field_id',
+        'correction_table_id',
+        'transformation',
+        'tone_numbers',
+        'spaces'
+    ]
+
+    can_be_primary_field = False
+
+    def prepare_value_for_db(self, instance, value):
+        return value
+
+    def get_serializer_field(self, instance, **kwargs):
+        return serializers.JSONField(
+            **{
+                "required": False,
+                "allow_null": True,
+                "allow_blank": True,
+                **kwargs,
+            }
+        )
+
+    def get_model_field(self, instance, **kwargs):
+        return ChineseRomanizationField(
+            default=None,
+            blank=True, 
+            null=True, 
+            **kwargs
+        )
+
+    def transform_value(self, field, source_value, usage_user_id):
+        if field.transformation == CHOICE_PINYIN:
+            return clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
+        elif field.transformation == CHOICE_JYUTPING:
+            return clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
+
+    def row_of_dependency_updated(
+        self,
+        field,
+        starting_row,
+        update_collector,
+        field_cache: "FieldCache",
+        via_path_to_starting_table,
+    ):
+
+        self.process_transformation(field, starting_row)
+
+        ViewHandler().field_value_updated(field)     
+
+        super().row_of_dependency_updated(
+            field,
+            starting_row,
+            update_collector,
+            field_cache,
+            via_path_to_starting_table,
+        )        
+
+
+    def update_all_rows(self, field):
+        # TODO write this
+        pass
+        # logger.info(f'update_all_rows')
+        # transliteration_id = field.transliteration_id
+        # source_field_id = f'field_{field.source_field.id}'
+        # target_field_id = f'field_{field.id}'
+
+        # table_id = field.table.id
+
+
+        # run_clt_transliteration_all_rows.delay(table_id, 
+        #                                         transliteration_id,
+        #                                         source_field_id, 
+        #                                         target_field_id,
+        #                                         self.get_usage_user_id(field))

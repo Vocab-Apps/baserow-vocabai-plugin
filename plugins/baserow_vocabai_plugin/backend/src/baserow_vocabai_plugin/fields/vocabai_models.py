@@ -72,6 +72,44 @@ class DictionaryLookupField(Field):
         help_text="Dictionary lookup key for this service",
     )            
 
+CHOICE_PINYIN = 'pinyin'
+CHOICE_JYUTPING = 'jyutping'
+CHINESE_ROMANIZATION_CHOICES = (
+    (CHOICE_PINYIN, "Pinyin"),
+    (CHOICE_JYUTPING, "Jyutping"),
+)
+
+class ChineseRomanizationField(Field):
+    source_field = models.ForeignKey(
+        LanguageField,
+        on_delete=models.CASCADE,
+        help_text="The field to transliterate.",
+        null=True,
+        blank=True,
+        related_name='+'
+    )    
+    correction_table = models.ForeignKey(
+        "database.Table",
+        on_delete=models.CASCADE,
+        help_text="The correction table for pinyin/jyutping",
+        null=True,
+        blank=True,
+    )
+    transformation = models.CharField(
+        max_length=64,
+        default=CHOICE_PINYIN,
+        choices=CHINESE_ROMANIZATION_CHOICES,
+        help_text="Pinyin or Jyutping",
+    )
+    tone_numbers = models.BooleanField(
+        default=False,
+        help_text="Whether to use tone numbers in pinyin/jyutping",
+    )
+    spaces = models.BooleanField(
+        default=False,
+        help_text="Whether to use space between each syllable",
+    )
+
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
