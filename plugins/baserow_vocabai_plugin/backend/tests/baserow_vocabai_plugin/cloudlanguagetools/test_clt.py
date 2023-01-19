@@ -7,6 +7,7 @@ from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
 from baserow_vocabai_plugin.cloudlanguagetools import clt_interface, quotas
+import cloudlanguagetools.languages
 
 # tests need to be run with CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes
 
@@ -184,3 +185,38 @@ def test_pinyin(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     json_response = response.json()
     table_id = json_response['id']
+
+    # add chinese field
+    # =================
+    # cloudlanguagetools.languages.Language.zh_cn
+
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {"name": "chinese", "type": "language_text", "language": cloudlanguagetools.languages.Language.zh_cn.name},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_json = response.json()
+    pprint.pprint(response_json)
+    chinese_field_id = response_json['id']
+    assert response.status_code == HTTP_200_OK    
+
+    # add pinyin field
+    # ================
+
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {
+            "name": "pinyin", 
+            "type": "chinese_romanization", 
+            "source_field_id": chinese_field_id, 
+            'tone_numbers': False,
+            'spaces': False,
+        },
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_json = response.json()
+    pprint.pprint(response_json)
+    assert response.status_code == HTTP_200_OK
+    english_trans_field_id = response_json['id']    

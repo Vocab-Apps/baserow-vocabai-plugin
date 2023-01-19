@@ -509,22 +509,10 @@ class ChineseRomanizationFieldType(TransformationFieldType):
         return value
 
     def get_serializer_field(self, instance, **kwargs):
-        return serializers.JSONField(
-            **{
-                "required": False,
-                "allow_null": True,
-                "allow_blank": True,
-                **kwargs,
-            }
-        )
+        return serializers.JSONField(**kwargs)
 
     def get_model_field(self, instance, **kwargs):
-        return ChineseRomanizationField(
-            default=None,
-            blank=True, 
-            null=True, 
-            **kwargs
-        )
+        return models.JSONField(default={}, **kwargs)
 
     def transform_value(self, field, source_value, usage_user_id):
         if field.transformation == CHOICE_PINYIN:

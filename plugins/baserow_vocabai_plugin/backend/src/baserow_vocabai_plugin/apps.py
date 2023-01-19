@@ -11,9 +11,10 @@ class PluginNameConfig(AppConfig):
 
         from baserow.contrib.database.fields.registries import field_type_registry
 
-        from .fields.vocabai_fieldtypes import LanguageFieldType, TranslationFieldType, TransliterationFieldType, DictionaryLookupFieldType        
+        from .fields.vocabai_fieldtypes import LanguageFieldType, TranslationFieldType, TransliterationFieldType, DictionaryLookupFieldType, ChineseRomanizationFieldType
 
         field_type_registry.register(LanguageFieldType())
         field_type_registry.register(TranslationFieldType())
         field_type_registry.register(TransliterationFieldType())
         field_type_registry.register(DictionaryLookupFieldType())
+        field_type_registry.register(ChineseRomanizationFieldType())
