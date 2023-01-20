@@ -59,8 +59,9 @@ class TranslationTextField(models.TextField):
 
 class TransformationFieldType(FieldType):
     def get_field_dependencies(self, field_instance: Field, field_lookup_cache: FieldCache):
-        # logger.info(f'get_field_dependencies')
+        logger.debug(f'get_field_dependencies')
         if field_instance.source_field != None:
+            logger.debug(f'we depend on field {field_instance.source_field}')
             return [
                 FieldDependency(
                     dependency=field_instance.source_field,
@@ -504,9 +505,45 @@ class ChineseRomanizationFieldType(TransformationFieldType):
         'spaces'
     ]
 
+    serializer_field_names = [
+        'source_field_id',
+        'correction_table_id',
+        'transformation',
+        'tone_numbers',
+        'spaces'        
+    ]
+    serializer_field_overrides = {
+        "source_field_id": serializers.IntegerField(
+            required=False,
+            allow_null=True,
+            source="source_field.id",
+            help_text="The id of the field to transliterate",
+        ),
+        "correction_table_id": serializers.IntegerField(
+            required=False,
+            allow_null=True,
+            source="correction_table.id",
+            help_text="The id of the table which contains pinyin/jyutping corrections",
+        ),
+        "transformation": serializers.CharField(
+            required=True,
+            allow_null=False,
+            allow_blank=False
+        ),        
+        "tone_numbers": serializers.BooleanField(
+            required=True,
+            allow_null=False,
+        ),
+        "spaces": serializers.BooleanField(
+            required=True,
+            allow_null=False,
+        ),        
+    }    
+
     can_be_primary_field = False
 
     def prepare_value_for_db(self, instance, value):
+        logger.info(f'prepare_value_for_db, value: {value}')
         return value
 
     # def get_serializer_field(self, instance, **kwargs):
@@ -516,20 +553,23 @@ class ChineseRomanizationFieldType(TransformationFieldType):
     #     return models.JSONField(null=True, blank=True, default={}, **kwargs)
 
     def get_serializer_field(self, instance, **kwargs):
+        logger.info('get_serializer_field')
         return serializers.JSONField(
+            default={},
             required=False,
             allow_null=True,
             **kwargs)
 
     def get_model_field(self, instance, **kwargs):
+        logger.info('get_model_field')
         return models.JSONField(            
             default={},
             blank=True, 
             null=True, 
             **kwargs)
 
-
     def transform_value(self, field, source_value, usage_user_id):
+        logger.info('transform_field')
         if field.transformation == CHOICE_PINYIN:
             return clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
         elif field.transformation == CHOICE_JYUTPING:
@@ -543,6 +583,7 @@ class ChineseRomanizationFieldType(TransformationFieldType):
         field_cache: "FieldCache",
         via_path_to_starting_table,
     ):
+        logger.info('row_of_dependency_updated')
 
         self.process_transformation(field, starting_row)
 

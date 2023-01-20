@@ -96,16 +96,22 @@ class ChineseRomanizationField(Field):
         blank=True,
     )
     transformation = models.CharField(
+        null=False,
+        blank=False,
         max_length=64,
         default=CHOICE_PINYIN,
         choices=CHINESE_ROMANIZATION_CHOICES,
         help_text="Pinyin or Jyutping",
     )
     tone_numbers = models.BooleanField(
+        null=False,
+        blank=False,
         default=False,
         help_text="Whether to use tone numbers in pinyin/jyutping",
     )
     spaces = models.BooleanField(
+        null=False,
+        blank=False,
         default=False,
         help_text="Whether to use space between each syllable",
     )

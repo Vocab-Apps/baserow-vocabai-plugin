@@ -3,11 +3,14 @@ import json
 import os
 import pprint
 import json
+import logging
 from django.shortcuts import reverse
 from rest_framework.status import HTTP_200_OK
 
 from baserow_vocabai_plugin.cloudlanguagetools import clt_interface, quotas
 import cloudlanguagetools.languages
+
+logger = logging.getLogger(__name__)
 
 # tests need to be run with CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes
 
@@ -167,9 +170,10 @@ def test_add_language_field(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_pinyin(api_client, data_fixture):
-    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin -s -rPP --log-cli-level=DEBUG
     assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
 
+    logger.info(f'starting test_pinyin')
     user, token = data_fixture.create_user_and_token()
 
     # update language data first
@@ -177,6 +181,8 @@ def test_pinyin(api_client, data_fixture):
 
     # create database and table
     # =========================
+    
+    logger.info(f'creating database and table')
 
     database = data_fixture.create_database_application(user=user)
 
@@ -189,6 +195,8 @@ def test_pinyin(api_client, data_fixture):
     # add chinese field
     # =================
     # cloudlanguagetools.languages.Language.zh_cn
+
+    logger.info(f'adding chinese language field')
 
     response = api_client.post(
         reverse("api:database:fields:list", kwargs={"table_id": table_id}),
@@ -204,11 +212,14 @@ def test_pinyin(api_client, data_fixture):
     # add pinyin field
     # ================
 
+    logger.info(f'adding pinyin field')
+
     response = api_client.post(
         reverse("api:database:fields:list", kwargs={"table_id": table_id}),
         {
             "name": "pinyin", 
             "type": "chinese_romanization", 
+            "transformation": "pinyin",
             "source_field_id": chinese_field_id, 
             'tone_numbers': False,
             'spaces': False,
@@ -223,6 +234,8 @@ def test_pinyin(api_client, data_fixture):
 
     # enter some data in the chinese field
     # ====================================
+
+    logger.info(f'writing data to row')
 
     response = api_client.post(
         reverse("api:database:rows:list", kwargs={"table_id": table_id}),
