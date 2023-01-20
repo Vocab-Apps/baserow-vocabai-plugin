@@ -18,6 +18,7 @@ from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_tra
 from ..cloudlanguagetools import clt_interface
 
 import logging
+import pprint
 logger = logging.getLogger(__name__)
 
 # see https://community.baserow.io/t/anonymous-api-access-or-universal-token/788/18 for background
@@ -508,11 +509,25 @@ class ChineseRomanizationFieldType(TransformationFieldType):
     def prepare_value_for_db(self, instance, value):
         return value
 
+    # def get_serializer_field(self, instance, **kwargs):
+    #     return serializers.JSONField(**kwargs)
+
+    # def get_model_field(self, instance, **kwargs):
+    #     return models.JSONField(null=True, blank=True, default={}, **kwargs)
+
     def get_serializer_field(self, instance, **kwargs):
-        return serializers.JSONField(**kwargs)
+        return serializers.JSONField(
+            required=False,
+            allow_null=True,
+            **kwargs)
 
     def get_model_field(self, instance, **kwargs):
-        return models.JSONField(default={}, **kwargs)
+        return models.JSONField(            
+            default={},
+            blank=True, 
+            null=True, 
+            **kwargs)
+
 
     def transform_value(self, field, source_value, usage_user_id):
         if field.transformation == CHOICE_PINYIN:

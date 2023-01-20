@@ -220,3 +220,20 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_json)
     assert response.status_code == HTTP_200_OK
     english_trans_field_id = response_json['id']    
+
+    # enter some data in the chinese field
+    # ====================================
+
+    response = api_client.post(
+        reverse("api:database:rows:list", kwargs={"table_id": table_id}),
+        {f"field_{chinese_field_id}": "上課"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    print('response_row after writing some data:')
+    pprint.pprint(response_row) 
+    assert response.status_code == HTTP_200_OK
+
+    # retrieve the row
+
