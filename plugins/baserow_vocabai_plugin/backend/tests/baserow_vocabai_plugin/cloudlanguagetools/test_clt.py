@@ -170,14 +170,15 @@ def test_add_language_field(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_pinyin(api_client, data_fixture):
-    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin -s -rPP --log-cli-level=DEBUG
-    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=no pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin -s -rPP --log-cli-level=DEBUG
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=no pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_pinyin
+    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'no'
 
     logger.info(f'starting test_pinyin')
     user, token = data_fixture.create_user_and_token()
 
     # update language data first
-    clt_interface.update_language_data()
+    # clt_interface.update_language_data()
 
     # create database and table
     # =========================

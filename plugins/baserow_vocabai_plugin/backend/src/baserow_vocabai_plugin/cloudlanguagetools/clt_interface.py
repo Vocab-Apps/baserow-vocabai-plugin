@@ -136,8 +136,8 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
 
 def get_pinyin(text, tone_numbers, spaces, corrections=[]):
     # returns an array of solutions
-    return cloudlanguagetools.servicemanager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
+    return manager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
 
 def get_jyutping(text, tone_numbers, spaces, corrections=[]):
     # returns an array of solutions
-    return cloudlanguagetools.servicemanager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)    
+    return manager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)    
