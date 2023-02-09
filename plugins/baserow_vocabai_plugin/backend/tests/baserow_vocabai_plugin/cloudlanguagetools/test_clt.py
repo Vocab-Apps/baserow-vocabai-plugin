@@ -246,8 +246,21 @@ def test_pinyin(api_client, data_fixture):
     )
     response_row = response.json()
     print('response_row after writing some data:')
-    pprint.pprint(response_row) 
+    # pprint.pprint(response_row) 
+    table_row_id = response_row['id']
     assert response.status_code == HTTP_200_OK
 
     # retrieve the row
+    # ================
+
+    logger.info('retrieving row')
+    response = api_client.get(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response_row) 
+
 
