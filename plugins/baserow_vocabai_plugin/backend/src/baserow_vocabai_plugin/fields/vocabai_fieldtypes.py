@@ -570,10 +570,15 @@ class ChineseRomanizationFieldType(TransformationFieldType):
 
     def transform_value(self, field, source_value, usage_user_id):
         logger.info('transform_field')
+        romanization_choices = []
         if field.transformation == CHOICE_PINYIN:
-            return clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
+            romanization_choices =  clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
         elif field.transformation == CHOICE_JYUTPING:
-            return clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
+            romanization_choices =  clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
+        return {
+            'chosen_solution': 0,
+            'romanization_choices': romanization_choices
+        }
 
     def row_of_dependency_updated(
         self,

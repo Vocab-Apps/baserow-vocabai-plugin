@@ -231,7 +231,7 @@ def test_pinyin(api_client, data_fixture):
     response_json = response.json()
     pprint.pprint(response_json)
     assert response.status_code == HTTP_200_OK
-    english_trans_field_id = response_json['id']    
+    pinyin_field_id = response_json['id']
 
     # enter some data in the chinese field
     # ====================================
@@ -262,5 +262,7 @@ def test_pinyin(api_client, data_fixture):
     response_row = response.json()
     assert response.status_code == HTTP_200_OK
     pprint.pprint(response_row) 
+
+    assert response_row[f'field_{pinyin_field_id}'] == {'chosen_solution': 0, 'romanization_choices': ['shàngkè']}
 
 
