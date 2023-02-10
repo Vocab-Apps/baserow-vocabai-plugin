@@ -561,6 +561,7 @@ class ChineseRomanizationFieldType(TransformationFieldType):
             **kwargs)
 
     def get_model_field(self, instance, **kwargs):
+        # needs to return a Django Model Field like models.TextField or models.CharField etc.
         logger.info('get_model_field')
         return models.JSONField(            
             default={},
