@@ -263,6 +263,6 @@ def test_pinyin(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     pprint.pprint(response_row) 
 
-    assert response_row[f'field_{pinyin_field_id}'] == {'chosen_solution': 0, 'romanization_choices': ['shàngkè']}
+    assert response_row[f'field_{pinyin_field_id}'] == {'id': 0, 'choices': ['shàngkè']}
 
 
