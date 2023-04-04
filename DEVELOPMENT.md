@@ -50,6 +50,9 @@ pytest
 CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py
 ```
 
+# Generating new baserow patch file
+see ```plugins/baserow_vocabai_plugin/backend/build.sh```
+
 # Updating baserow-vocabai-patches
 get latest master
 ```
