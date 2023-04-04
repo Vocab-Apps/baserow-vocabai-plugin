@@ -22,5 +22,6 @@ set -euo pipefail
 # =======================
 
 # creating the patch
+# cd ~/python/baserow-vocabai-patches
 # git diff baserow-1.15.2..baserow-vocabai-patch-1.15.2 | sed "s:/deploy/all-in-one/:/:g" > ~/python/baserow-vocabai-plugin/plugins/baserow_vocabai_plugin/baserow-patches/baserow.patch
 cd /baserow && patch -u -p1 -i $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/baserow-patches/baserow.patch

@@ -1,8 +1,8 @@
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
-index 71879282..c259be2a 100755
+index 131ad6562..d059a4d64 100755
 --- a/backend/docker/docker-entrypoint.sh
 +++ b/backend/docker/docker-entrypoint.sh
-@@ -315,6 +315,11 @@ case "$1" in
+@@ -346,6 +346,11 @@ case "$1" in
        echo "Running celery export worker healthcheck..."
        exec celery -A baserow inspect ping -d "export-worker@$HOSTNAME" -t 10 "${@:2}"
      ;;
@@ -15,15 +15,21 @@ index 71879282..c259be2a 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index c2624439..7431c79d 100644
+index d887fa50c..bcd3a3c7d 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
-@@ -13,6 +13,45 @@ from corsheaders.defaults import default_headers
- 
- from baserow.version import VERSION
- 
+@@ -6,6 +6,7 @@ from decimal import Decimal
+ from ipaddress import ip_network
+ from pathlib import Path
+ from urllib.parse import urljoin, urlparse
 +import pprint
-+
+ 
+ import dj_database_url
+ from celery.schedules import crontab
+@@ -28,6 +29,43 @@ class Everything(object):
+ if "*" in FEATURE_FLAGS:
+     FEATURE_FLAGS = Everything()
+ 
 +# sentry setup
 +# ============
 +
@@ -64,7 +70,7 @@ index c2624439..7431c79d 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -140,6 +179,8 @@ CELERY_TASK_ROUTES = {
+@@ -152,6 +190,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
@@ -74,7 +80,7 @@ index c2624439..7431c79d 100644
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
-index c25910a9..75093c68 100755
+index facb25de7..53a86d2d7 100755
 --- a/supervisor/default_baserow_env.sh
 +++ b/supervisor/default_baserow_env.sh
 @@ -74,6 +74,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
@@ -86,7 +92,7 @@ index c25910a9..75093c68 100755
  export BASEROW_CELERY_BEAT_STARTUP_COMMAND="${BASEROW_CELERY_BEAT_STARTUP_COMMAND:-$DEFAULT_CELERY_BEAT_STARTUP_COMMAND}"
  export XDG_CONFIG_HOME=/home/$DOCKER_USER/
 diff --git a/supervisor/supervisor.conf b/supervisor/supervisor.conf
-index 0856cd2f..a2d9f791 100644
+index 0856cd2fc..a2d9f7918 100644
 --- a/supervisor/supervisor.conf
 +++ b/supervisor/supervisor.conf
 @@ -60,6 +60,19 @@ priority=2
@@ -110,16 +116,18 @@ index 0856cd2f..a2d9f791 100644
  user=%(ENV_DOCKER_USER)s
  directory=/baserow/backend
 diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
-index ce61a5a1..79147120 100644
+index 08099307e..74a201a7a 100644
 --- a/web-frontend/config/nuxt.config.base.js
 +++ b/web-frontend/config/nuxt.config.base.js
-@@ -21,11 +21,22 @@ export default function (
+@@ -26,6 +26,7 @@ export default function (
      base + '/modules/database/module.js',
      premiumBase + '/modules/baserow_premium/module.js',
      enterpriseBase + '/modules/baserow_enterprise/module.js',
 +    '@nuxtjs/sentry'
    ]
  
+   const featureFlags = getFeatureFlags()
+@@ -37,6 +38,16 @@ export default function (
    const modules = baseModules.concat(additionalModules)
    return {
      modules,
@@ -137,10 +145,10 @@ index ce61a5a1..79147120 100644
        extend(config, ctx) {
          config.node = { fs: 'empty' }
 diff --git a/web-frontend/package.json b/web-frontend/package.json
-index 2c4c7665..02019c99 100644
+index e57b79bfa..54c2835cd 100644
 --- a/web-frontend/package.json
 +++ b/web-frontend/package.json
-@@ -45,7 +45,8 @@
+@@ -46,7 +46,8 @@
      "uuid": "^8.3.2",
      "vue-chartjs": "^3.5.1",
      "vuejs-datepicker": "^1.6.2",
@@ -150,7 +158,7 @@ index 2c4c7665..02019c99 100644
    },
    "devDependencies": {
      "@nuxtjs/eslint-config": "^6.0.1",
-@@ -78,6 +79,7 @@
+@@ -79,6 +80,7 @@
      "stylelint": "^13.13.1",
      "stylelint-config-standard": "^22.0.0",
      "stylelint-webpack-plugin": "^3.0.1",
