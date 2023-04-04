@@ -59,18 +59,18 @@ git push
 ```
 create persistent branch with the baserow release
 ```
-git checkout -b baserow-1.13.2 1.13.2
-git push --set-upstream origin baserow-1.13.2
+git checkout -b baserow-1.15.2 1.15.2
+git push --set-upstream origin baserow-1.15.2
 ```
 now, create a new vocabai branch, which we'll rebase with the latest baserow
 ```
 git checkout baserow-vocabai-patch-1.12.0
-git checkout -b baserow-vocabai-patch-1.13.2
-git rebase baserow-1.13.2
+git checkout -b baserow-vocabai-patch-1.15.2
+git rebase baserow-1.15.2
 ```
 (fix any conflicts that show up)
 ```
-git push --set-upstream origin baserow-vocabai-patch-1.13.2
+git push --set-upstream origin baserow-vocabai-patch-1.15.2
 ```
 
 # Updating to a newer baserow release
@@ -84,4 +84,4 @@ then, compare contents in `baserow-plugin-1-13-2` with existing plugin files.
 diff --color=always -ur baserow-vocabai-plugin baserow-plugin-1-15-2   | less -r
 ```
 
-* mass-replace `1.12.0` with `1.13.2`
+* mass-replace `1.12.0` with `1.15.2`
