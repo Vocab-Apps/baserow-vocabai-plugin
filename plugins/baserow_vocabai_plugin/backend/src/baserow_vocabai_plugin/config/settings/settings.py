@@ -1,3 +1,5 @@
+import sys
+
 def setup(settings):
     """
     This function is called after Baserow as setup its own Django settings file but
@@ -8,3 +10,7 @@ def setup(settings):
     for db, value in settings.DATABASES:
         value['engine'] = 'some custom engine'
     """
+
+    # see here: https://community.baserow.io/t/when-running-pytest-on-a-plugin-runtimeerror-model-class-baserow-contrib-builder-pages-models-page-doesnt-declare-an-explicit-app-label-and-isnt-in-an-application-in-installed-apps/2548/2
+    if "pytest" in sys.modules:
+        settings.INSTALLED_APPS += ["baserow.contrib.builder"]
