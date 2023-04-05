@@ -283,3 +283,18 @@ def test_pinyin(api_client, data_fixture):
 
 
     assert response_row[f'field_{pinyin_field_id}'] == {'id': 1, 'choices': ['le', 'liǎo', 'liào']}    
+
+    # retrieve the row again, make sure the id on the pinyin field is correct
+    # =======================================================================
+
+    logger.info('retrieving row')
+    response = api_client.get(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    assert response.status_code == HTTP_200_OK
+    # pprint.pprint(response_row) 
+
+    assert response_row[f'field_{pinyin_field_id}'] == {'id': 1, 'choices': ['le', 'liǎo', 'liào']}    
