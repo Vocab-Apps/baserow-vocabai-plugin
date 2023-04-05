@@ -240,7 +240,7 @@ def test_pinyin(api_client, data_fixture):
 
     response = api_client.post(
         reverse("api:database:rows:list", kwargs={"table_id": table_id}),
-        {f"field_{chinese_field_id}": "上課"},
+        {f"field_{chinese_field_id}": "了"},
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
     )
@@ -263,6 +263,23 @@ def test_pinyin(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     pprint.pprint(response_row) 
 
-    assert response_row[f'field_{pinyin_field_id}'] == {'id': 0, 'choices': ['shàngkè']}
+    assert response_row[f'field_{pinyin_field_id}'] == {'id': 0, 'choices': ['le', 'liǎo', 'liào']}
 
 
+    # modify the pinyin field
+    # =======================
+
+    logger.info('updating row, the pinyin field')
+    field_value = {'id': 1, 'choices': ['le', 'liǎo', 'liào']}
+    response = api_client.patch(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        {f"field_{pinyin_field_id}": field_value},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    logger.info(pprint.pformat(response_row))
+    assert response.status_code == HTTP_200_OK
+
+
+    assert response_row[f'field_{pinyin_field_id}'] == {'id': 1, 'choices': ['le', 'liǎo', 'liào']}    
