@@ -14,7 +14,7 @@ from baserow.core.models import GROUP_USER_PERMISSION_ADMIN, GroupUser
 
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField, ChineseRomanizationField, CHOICE_PINYIN, CHOICE_JYUTPING
 
-from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows
+from ..cloudlanguagetools.tasks import run_clt_translation_all_rows, run_clt_transliteration_all_rows, run_clt_lookup_all_rows, run_clt_chinese_romanization_all_rows
 from ..cloudlanguagetools import clt_interface
 
 import logging
@@ -605,18 +605,16 @@ class ChineseRomanizationFieldType(TransformationFieldType):
 
 
     def update_all_rows(self, field):
-        # TODO write this
-        pass
-        # logger.info(f'update_all_rows')
-        # transliteration_id = field.transliteration_id
-        # source_field_id = f'field_{field.source_field.id}'
-        # target_field_id = f'field_{field.id}'
+        logger.info(f'update_all_rows')
+        source_field_id = f'field_{field.source_field.id}'
+        target_field_id = f'field_{field.id}'
 
-        # table_id = field.table.id
+        table_id = field.table.id
 
-
-        # run_clt_transliteration_all_rows.delay(table_id, 
-        #                                         transliteration_id,
-        #                                         source_field_id, 
-        #                                         target_field_id,
-        #                                         self.get_usage_user_id(field))
+        run_clt_chinese_romanization_all_rows.delay(table_id, 
+                                                    field.transformation,
+                                                    field.tone_numbers,
+                                                    field.spaces,
+                                                    source_field_id, 
+                                                    target_field_id,
+                                                    self.get_usage_user_id(field))

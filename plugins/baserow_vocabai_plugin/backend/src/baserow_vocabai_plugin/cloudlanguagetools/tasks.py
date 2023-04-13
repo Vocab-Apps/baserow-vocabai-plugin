@@ -10,6 +10,7 @@ import json
 
 from . import clt_interface
 from .quotas import QuotaOverUsage
+from ..fields.vocabai_models import CHOICE_PINYIN, CHOICE_JYUTPING
 
 import os
 import time
@@ -169,6 +170,31 @@ def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_f
                     row.save()        
     except QuotaOverUsage:
         logger.exception(f'could not complete dictionary lookup for user {usage_user_id}')
+
+
+# chinese romanization
+# ====================
+
+# noinspection PyUnusedLocal
+@app.task(
+    bind=True,
+    soft_time_limit=EXPORT_SOFT_TIME_LIMIT,
+    time_limit=EXPORT_TIME_LIMIT,
+)
+def run_clt_chinese_romanization_all_rows(self, table_id, romanization_type, tone_numbers, spaces, source_field_id, target_field_id, usage_user_id):
+    try:
+        for row_id_list in iterate_row_id_buckets(table_id):
+            for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
+                text = getattr(row, source_field_id)
+                if text != None and len(text) > 0:
+                    if romanization_type == CHOICE_PINYIN:
+                        result = clt_interface.get_pinyin(text, tone_numbers, spaces)
+                    elif romanization_type == CHOICE_JYUTPING:
+                        result = clt_interface.get_jyutping(text, tone_numbers, spaces)
+                    setattr(row, target_field_id, result)
+                    row.save()        
+    except QuotaOverUsage:
+        logger.exception(f'could not complete chinese romanization for user {usage_user_id}')
 
 
 

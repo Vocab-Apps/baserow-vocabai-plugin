@@ -353,4 +353,4 @@ def test_pinyin(api_client, data_fixture):
         'solution_overrides': [],
         'solutions': [['le', 'liao3', 'liao4']]
     }    
-    # assert response_row[f'field_{pinyin_field_id}'] == expected_output
+    assert response_row[f'field_{pinyin_field_id}'] == expected_output
