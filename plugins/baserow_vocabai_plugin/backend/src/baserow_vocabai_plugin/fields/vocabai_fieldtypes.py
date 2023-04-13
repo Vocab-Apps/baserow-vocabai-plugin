@@ -573,13 +573,10 @@ class ChineseRomanizationFieldType(TransformationFieldType):
         logger.info('transform_field')
         romanization_choices = []
         if field.transformation == CHOICE_PINYIN:
-            romanization_choices =  clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
+            result =  clt_interface.get_pinyin(source_value, field.tone_numbers, field.spaces)
         elif field.transformation == CHOICE_JYUTPING:
-            romanization_choices =  clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
-        return {
-            'solution_overrides': [],
-            'solutions': romanization_choices
-        }
+            result =  clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
+        return result
 
     def row_of_dependency_updated(
         self,

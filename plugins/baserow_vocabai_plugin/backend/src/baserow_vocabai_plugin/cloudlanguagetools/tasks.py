@@ -183,6 +183,7 @@ def run_clt_lookup_all_rows(self, table_id, lookup_id, source_field_id, target_f
 )
 def run_clt_chinese_romanization_all_rows(self, table_id, romanization_type, tone_numbers, spaces, source_field_id, target_field_id, usage_user_id):
     try:
+        logger.debug(f'running run_clt_chinese_romanization_all_rows')
         for row_id_list in iterate_row_id_buckets(table_id):
             for row in process_row_id_bucket_iterate_rows(table_id, row_id_list):
                 text = getattr(row, source_field_id)
@@ -191,6 +192,7 @@ def run_clt_chinese_romanization_all_rows(self, table_id, romanization_type, ton
                         result = clt_interface.get_pinyin(text, tone_numbers, spaces)
                     elif romanization_type == CHOICE_JYUTPING:
                         result = clt_interface.get_jyutping(text, tone_numbers, spaces)
+                    logger.debug(f'computed romanization: {pprint.pformat(result)}')
                     setattr(row, target_field_id, result)
                     row.save()        
     except QuotaOverUsage:

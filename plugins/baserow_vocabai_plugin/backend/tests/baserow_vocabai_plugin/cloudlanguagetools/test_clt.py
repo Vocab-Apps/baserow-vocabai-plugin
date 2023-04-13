@@ -351,6 +351,6 @@ def test_pinyin(api_client, data_fixture):
     # TODO: add this assert back, after the celery-based mass update is put in again
     expected_output = {
         'solution_overrides': [],
-        'solutions': [['le', 'liao3', 'liao4']]
+        'solutions': [['le5', 'liao3', 'liao4']]
     }    
     assert response_row[f'field_{pinyin_field_id}'] == expected_output

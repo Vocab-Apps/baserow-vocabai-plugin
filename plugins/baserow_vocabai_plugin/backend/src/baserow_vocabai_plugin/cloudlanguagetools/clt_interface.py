@@ -135,9 +135,15 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
 
 
 def get_pinyin(text, tone_numbers, spaces, corrections=[]):
-    # returns an array of solutions
-    return manager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
+    romanization_solution = manager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
+    return {
+        'solution_overrides': [],
+        'solutions': romanization_solution
+    }
 
 def get_jyutping(text, tone_numbers, spaces, corrections=[]):
-    # returns an array of solutions
-    return manager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)    
+    romanization_solution =  manager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)    
+    return {
+        'solution_overrides': [],
+        'solutions': romanization_solution
+    }
