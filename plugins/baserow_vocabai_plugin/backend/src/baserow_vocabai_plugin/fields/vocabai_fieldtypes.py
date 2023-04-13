@@ -577,8 +577,8 @@ class ChineseRomanizationFieldType(TransformationFieldType):
         elif field.transformation == CHOICE_JYUTPING:
             romanization_choices =  clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
         return {
-            'id': 0,
-            'choices': romanization_choices
+            'solution_overrides': [],
+            'solutions': romanization_choices
         }
 
     def row_of_dependency_updated(
