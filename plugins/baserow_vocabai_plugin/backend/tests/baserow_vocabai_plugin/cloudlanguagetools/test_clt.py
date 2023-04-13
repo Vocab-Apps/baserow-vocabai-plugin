@@ -354,3 +354,25 @@ def test_pinyin(api_client, data_fixture):
         'solutions': [['le5', 'liao3', 'liao4']]
     }    
     assert response_row[f'field_{pinyin_field_id}'] == expected_output
+
+    # change chinese text, make sure pinyin gets updated
+    # ==================================================
+
+    new_chinese = '没有'
+    logger.info(f'changing chinese field to {new_chinese}')
+
+    response = api_client.patch(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        {f"field_{chinese_field_id}": new_chinese},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response_row)
+
+    expected_pinyin = {
+        'solution_overrides': [],
+        'solutions': [['mei2you3']]
+    }
+    assert response_row[f'field_{pinyin_field_id}'] == expected_pinyin
