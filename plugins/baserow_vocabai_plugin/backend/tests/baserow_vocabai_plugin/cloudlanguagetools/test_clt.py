@@ -298,3 +298,40 @@ def test_pinyin(api_client, data_fixture):
     # pprint.pprint(response_row) 
 
     assert response_row[f'field_{pinyin_field_id}'] == {'id': 1, 'choices': ['le', 'liǎo', 'liào']}    
+
+    # modify pinyin derived field, use tone numbers
+    # =============================================
+
+    logger.info(f'modifying pinyin field to use tone numbers')
+
+    response = api_client.patch(
+        # reverse("api:database:fields:item", kwargs={"id": pinyin_field_id,"table_id": table_id}),
+        f'/api/database/fields/{pinyin_field_id}/',
+        {
+            "name": "pinyin", 
+            "type": "chinese_romanization", 
+            "transformation": "pinyin",
+            "source_field_id": chinese_field_id, 
+            'tone_numbers': True,
+            'spaces': False,
+        },
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_json = response.json()
+    # logger.debug(f'after switching to tone numbers: {pprint.pformat(response_json)}')
+    assert response.status_code == HTTP_200_OK
+
+    # retrieve row again, we should see tone numbers in the pinyin field
+    # ==================================================================
+
+    logger.info('retrieving row to make sure the pinyin field now has tone numbers')
+    response = api_client.get(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    assert response.status_code == HTTP_200_OK
+    logger.debug(f'response after switching to tone numbers: {pprint.pformat(response_row)}')
+    assert response_row[f'field_{pinyin_field_id}'] == {'id': 1, 'choices': ['le', 'liao3', 'liao4']}
