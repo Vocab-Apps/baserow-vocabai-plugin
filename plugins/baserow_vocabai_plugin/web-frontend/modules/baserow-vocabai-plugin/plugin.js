@@ -3,6 +3,7 @@ import {LanguageFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTypes'
 import {TranslationFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTypes'
 import {TransliterationFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTypes'
 import {DictionaryLookupFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTypes'
+import {ChineseRomanizationFieldType} from '@baserow-vocabai-plugin/vocabAiFieldTypes'
 
 import cloudlanguagetoolsStore from '@baserow-vocabai-plugin/store/cloudlanguagetools'
 
@@ -17,4 +18,5 @@ export default (context) => {
   app.$registry.register('field', new TranslationFieldType(context))
   app.$registry.register('field', new TransliterationFieldType(context))
   app.$registry.register('field', new DictionaryLookupFieldType(context))
+  app.$registry.register('field', new ChineseRomanizationFieldType(context))
 }
