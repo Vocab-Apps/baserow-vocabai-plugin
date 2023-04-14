@@ -179,3 +179,46 @@ export class DictionaryLookupFieldType extends FieldType {
   }  
 
 }
+
+export class ChineseRomanizationFieldType extends FieldType {
+  static getType() {
+    return 'chinese_romanization'
+  }
+
+  getIconClass() {
+    return 'list-ol'
+  }
+
+  getName() {
+    return 'Transliteration'
+  }
+
+  getFormComponent() {
+    return VocabAiTransliterationSubForm
+  }
+
+  getGridViewFieldComponent() {
+    return GridViewFieldText
+  }
+
+  getRowEditFieldComponent() {
+    return RowEditFieldText
+  }
+
+  getFunctionalGridViewFieldComponent() {
+    return FunctionalGridViewFieldText
+  }
+
+  getDocsDataType(field) {
+    return 'string'
+  }
+
+  getDocsDescription(field) {
+    return this.app.i18n.t('fieldDocs.text')
+  }
+
+  getDocsRequestExample(field) {
+    return 'string'
+  }  
+
+}
