@@ -5,6 +5,7 @@ import RowEditFieldText from '@baserow/modules/database/components/row/RowEditFi
 import VocabAiTranslationSubForm from '@baserow-vocabai-plugin/components/VocabAiTranslationSubForm'
 import VocabAiTransliterationSubForm from '@baserow-vocabai-plugin/components/VocabAiTransliterationSubForm'
 import VocabAiDictionaryLookupSubForm from '@baserow-vocabai-plugin/components/VocabAiDictionaryLookupSubForm'
+import VocabAiChineseRomanizationSubForm from '@baserow-vocabai-plugin/components/VocabAiChineseRomanizationSubForm'
 import VocabAiLanguageTextSubForm from '@baserow-vocabai-plugin/components/VocabAiLanguageTextSubForm'
 import FunctionalGridViewFieldText from '@baserow/modules/database/components/view/grid/fields/FunctionalGridViewFieldText'
 
@@ -194,7 +195,7 @@ export class ChineseRomanizationFieldType extends FieldType {
   }
 
   getFormComponent() {
-    return VocabAiTransliterationSubForm
+    return VocabAiChineseRomanizationSubForm
   }
 
   getGridViewFieldComponent() {

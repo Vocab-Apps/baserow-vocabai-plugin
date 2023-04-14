@@ -18,14 +18,13 @@
 
     <div class="control">
       <Dropdown
-        v-model="values.transliteration_id"
-        @input="translationServiceSelected"
+        v-model="values.transformation"
       >
         <DropdownItem
-          v-for="option in transliterationOptions"
-          :key="option.transliteration_id"
-          :name="option.transliteration_shortname"
-          :value="option.transliteration_id"
+          v-for="option in transformations"
+          :key="option.transformation_id"
+          :name="option.transformation_name"
+          :value="option.transformation_id"
           icon="font"
         ></DropdownItem>
       </Dropdown>      
@@ -49,10 +48,12 @@ export default {
   },    
   data() {
     return {
-      allowedValues: ['source_field_id', 'transliteration_id'],
+      allowedValues: ['source_field_id', 'transformation'],
       values: {
         source_field_id: '',
-        transliteration_id: '',
+        transformation: '',
+        tone_numbers: false,
+        spaces: false,
       },
       selectedSourceFieldLanguage: '',
     }
@@ -70,9 +71,6 @@ export default {
       this.selectedSourceFieldLanguage = selectedField.language;
       console.log('selectedSourceFieldLanguage: ', this.selectedSourceFieldLanguage);
     },    
-    async translationServiceSelected() {
-      console.log('translation_service: ', this.values.transliteration_id);
-    },            
   },
   computed: {
     tableFields() {
@@ -93,12 +91,17 @@ export default {
 
       return allLanguageFields;
     },
-    transliterationOptions() {
-      if (this.selectedSourceFieldLanguage == '') {
-        return [];
-      }
-      const transliterationOptions = this.$store.getters['cloudlanguagetools/transliterationOptionsForLanguage'](this.selectedSourceFieldLanguage);
-      return transliterationOptions;
+    transformations() {
+      return [
+        {
+          'transformation_name': 'Pinyin',
+          'transformation_id': 'pinyin'
+        },
+        {
+          'transformation_name': 'Jyutping',
+          'transformation_id': 'jyutping'
+        }
+      ];
     },
   }  
 }
