@@ -190,7 +190,7 @@ export class ChineseRomanizationFieldType extends FieldType {
   }
 
   getName() {
-    return 'Transliteration'
+    return 'Chinese Romanization'
   }
 
   getFormComponent() {
