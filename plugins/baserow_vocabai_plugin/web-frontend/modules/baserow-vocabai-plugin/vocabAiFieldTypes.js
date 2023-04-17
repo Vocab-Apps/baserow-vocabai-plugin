@@ -8,6 +8,8 @@ import VocabAiDictionaryLookupSubForm from '@baserow-vocabai-plugin/components/V
 import VocabAiChineseRomanizationSubForm from '@baserow-vocabai-plugin/components/VocabAiChineseRomanizationSubForm'
 import VocabAiLanguageTextSubForm from '@baserow-vocabai-plugin/components/VocabAiLanguageTextSubForm'
 import FunctionalGridViewFieldText from '@baserow/modules/database/components/view/grid/fields/FunctionalGridViewFieldText'
+import GridViewVocabAiChineseRomanizationField from '@baserow-vocabai-plugin/components/GridViewVocabAiChineseRomanizationField'
+import GridViewVocabAiChineseRomanizationFunctionalGrid from '@baserow-vocabai-plugin/components/GridViewVocabAiChineseRomanizationFunctionalGrid'
 
 export class LanguageFieldType extends FieldType {
   static getType() {
@@ -199,7 +201,7 @@ export class ChineseRomanizationFieldType extends FieldType {
   }
 
   getGridViewFieldComponent() {
-    return GridViewFieldText
+    return GridViewVocabAiChineseRomanizationField
   }
 
   getRowEditFieldComponent() {
@@ -207,7 +209,7 @@ export class ChineseRomanizationFieldType extends FieldType {
   }
 
   getFunctionalGridViewFieldComponent() {
-    return FunctionalGridViewFieldText
+    return GridViewVocabAiChineseRomanizationFunctionalGrid
   }
 
   getDocsDataType(field) {
