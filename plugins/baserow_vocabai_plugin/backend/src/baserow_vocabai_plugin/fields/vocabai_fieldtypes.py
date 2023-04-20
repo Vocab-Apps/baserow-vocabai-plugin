@@ -544,6 +544,7 @@ class ChineseRomanizationFieldType(TransformationFieldType):
 
     def prepare_value_for_db(self, instance, value):
         logger.info(f'prepare_value_for_db, value: {value}')
+        value = clt_interface.update_rendered_solution(value)
         return value
 
     # def get_serializer_field(self, instance, **kwargs):
