@@ -5,14 +5,8 @@
       :class="{ editing: editing }"
       @contextmenu="stopContextIfEditing($event)"
     >
-      <div v-if="!editing" class="grid-field-text">chinese romanization: {{ value }}</div>
-      <input
-        v-else
-        ref="input"
-        v-model="copy"
-        type="text"
-        class="grid-field-text__input"
-      />
+      <div v-if="!editing && value" class="grid-field-text">{{ value.solutions }}</div>
+      <div v-else class="grid-field-text">(edit): {{ value.solutions }}</div>
     </div>
   </template>
   
@@ -22,6 +16,7 @@
   
   export default {
     mixins: [gridField, gridFieldInput],
+    /*
     methods: {
       afterEdit() {
         this.$nextTick(() => {
@@ -30,6 +25,7 @@
         })
       },
     },
+    */
   }
   </script>
   

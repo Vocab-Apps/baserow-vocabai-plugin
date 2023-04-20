@@ -11,6 +11,7 @@ import FunctionalGridViewFieldText from '@baserow/modules/database/components/vi
 import GridViewVocabAiChineseRomanizationField from '@baserow-vocabai-plugin/components/GridViewVocabAiChineseRomanizationField'
 import GridViewVocabAiChineseRomanizationFunctionalGrid from '@baserow-vocabai-plugin/components/GridViewVocabAiChineseRomanizationFunctionalGrid'
 
+
 export class LanguageFieldType extends FieldType {
   static getType() {
     return 'language_text'
