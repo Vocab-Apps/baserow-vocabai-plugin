@@ -151,6 +151,7 @@ def format_chinese_romanization_result(solution):
     return result
  
 def update_rendered_solution(romanization):
-    rendered_solution = ' '.join(word[word_index] for word, word_index in zip(romanization['solutions'], romanization['solution_overrides']))
-    romanization['rendered_solution'] = rendered_solution
+    if romanization != None:
+        rendered_solution = ' '.join(word[word_index] for word, word_index in zip(romanization['solutions'], romanization['solution_overrides']))
+        romanization['rendered_solution'] = rendered_solution
     return romanization

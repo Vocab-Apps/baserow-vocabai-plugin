@@ -1,12 +1,8 @@
 <script>
 import gridField from '@baserow/modules/database/mixins/gridField'
 import gridFieldInput from '@baserow/modules/database/mixins/gridFieldInput'
-import ChineseRomanization from '@baserow-vocabai-plugin/components/ChineseRomanization'
 
 export default {
-  components: {
-    ChineseRomanization
-  },
   mixins: [gridField, gridFieldInput],
   methods: {
     select_romanization_alternative(word_index, alternative_index)
