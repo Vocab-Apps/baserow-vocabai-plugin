@@ -1,3 +1,31 @@
+<script>
+import gridField from '@baserow/modules/database/mixins/gridField'
+import gridFieldInput from '@baserow/modules/database/mixins/gridFieldInput'
+import ChineseRomanization from '@baserow-vocabai-plugin/components/ChineseRomanization'
+
+export default {
+  components: {
+    ChineseRomanization
+  },
+  mixins: [gridField, gridFieldInput],
+  methods: {
+    select_romanization_alternative(word_index, alternative_index)
+    {
+      console.log(`selecting ${word_index}, ${alternative_index}`);
+      this.copy.solution_overrides[word_index] = alternative_index;
+      // this will trigger the http patch request to update the backend
+      this.save();
+    },
+    afterEdit() {
+      // console.log('chinese romanization afterEdit');
+      // we need this to ensure we're working on a deep copy
+      this.copy = JSON.parse(JSON.stringify(this.value));
+    },
+  }
+}
+</script>
+
+
 <template>
     <div
       ref="cell"
@@ -5,27 +33,12 @@
       :class="{ editing: editing }"
       @contextmenu="stopContextIfEditing($event)"
     >
-      <div v-if="!editing && value" class="grid-field-text">{{ value.solutions }}</div>
-      <div v-else class="grid-field-text">(edit): {{ value.solutions }}</div>
+      <div v-if="!editing && value" class="grid-field-text"> <ChineseRomanization :romanization="value" /></div>
+      <div v-else class="dropdown dropdown--floating dropdown--floating">
+        <div v-for="(solution, solution_index) in value.solutions" class="chinese_romanization_word">
+          <span v-on:click="select_romanization_alternative(solution_index, romanization_index)" v-for="(romanization, romanization_index) in solution" class="chinese_romanization_alternative">{{ romanization }}</span>
+        </div>
+      </div>
     </div>
   </template>
-  
-  <script>
-  import gridField from '@baserow/modules/database/mixins/gridField'
-  import gridFieldInput from '@baserow/modules/database/mixins/gridFieldInput'
-  
-  export default {
-    mixins: [gridField, gridFieldInput],
-    /*
-    methods: {
-      afterEdit() {
-        this.$nextTick(() => {
-          this.$refs.input.focus()
-          this.$refs.input.selectionStart = this.$refs.input.selectionEnd = 100000
-        })
-      },
-    },
-    */
-  }
-  </script>
   

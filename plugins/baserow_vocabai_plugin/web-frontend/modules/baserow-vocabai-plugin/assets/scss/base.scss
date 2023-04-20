@@ -1,1 +1,15 @@
 // Default styling that applies for every page can be added here.
+
+
+.chinese_romanization_word {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.chinese_romanization_alternative {
+    // @include select-option-style(inline-block, false);
+    border-radius: 20px;
+    padding: 0 10px;
+    background-color: #CCCCCC;
+    margin: 5px;
+  }
