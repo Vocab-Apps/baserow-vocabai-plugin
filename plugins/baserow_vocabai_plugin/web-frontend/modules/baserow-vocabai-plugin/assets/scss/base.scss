@@ -4,17 +4,16 @@
 .chinese_romanization_word {
     margin-top: 5px;
     margin-bottom: 5px;
-}
-
-
-.chinese_romanization_alternative_list {
     word-wrap: break-word;
+    line-height: 1.5;
 }
+
 
 .chinese_romanization_alternative {
     // @include select-option-style(inline-block, false);
     border-radius: 20px;
     padding: 0 10px;
-    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
     cursor: pointer;
   }

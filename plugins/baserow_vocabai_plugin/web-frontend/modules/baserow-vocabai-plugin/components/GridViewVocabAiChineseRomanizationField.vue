@@ -32,7 +32,7 @@ export default {
       <div v-if="!editing && value" class="grid-field-text">{{ value.rendered_solution }}</div>
       <div v-else class="dropdown dropdown--floating dropdown--floating">
         <div v-for="(solution, solution_index) in value.solutions" class="chinese_romanization_word">
-          <span class="chinese_romanization_alternative_list"
+          <span
             v-on:click="select_romanization_alternative(solution_index, romanization_index)" 
             v-for="(romanization, romanization_index) in solution" 
             >
@@ -42,7 +42,7 @@ export default {
                     'background-color--blue': value.solution_overrides[solution_index] == romanization_index,
                     'background-color--light-gray': value.solution_overrides[solution_index] != romanization_index }"
                     >{{ romanization }}</span>
-        </span>
+            </span>
         </div>
       </div>
     </div>
