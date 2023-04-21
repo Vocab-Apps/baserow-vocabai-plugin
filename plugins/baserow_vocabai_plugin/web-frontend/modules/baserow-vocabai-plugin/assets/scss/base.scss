@@ -6,6 +6,11 @@
     margin-bottom: 5px;
 }
 
+
+.chinese_romanization_alternative_list {
+    word-wrap: break-word;
+}
+
 .chinese_romanization_alternative {
     // @include select-option-style(inline-block, false);
     border-radius: 20px;

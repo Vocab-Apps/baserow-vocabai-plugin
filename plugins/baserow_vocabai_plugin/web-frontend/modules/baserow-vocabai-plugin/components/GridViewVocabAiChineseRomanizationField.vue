@@ -32,7 +32,7 @@ export default {
       <div v-if="!editing && value" class="grid-field-text">{{ value.rendered_solution }}</div>
       <div v-else class="dropdown dropdown--floating dropdown--floating">
         <div v-for="(solution, solution_index) in value.solutions" class="chinese_romanization_word">
-          <span 
+          <span class="chinese_romanization_alternative_list"
             v-on:click="select_romanization_alternative(solution_index, romanization_index)" 
             v-for="(romanization, romanization_index) in solution" 
             >
