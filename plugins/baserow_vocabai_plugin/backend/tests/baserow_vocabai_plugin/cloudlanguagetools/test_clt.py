@@ -264,7 +264,9 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row) 
 
     expected_output = {
-        'solution_overrides': [],
+        'format_revision': 1,
+        'rendered_solution': 'le',
+        'solution_overrides': [0],
         'solutions': [['le', 'liǎo', 'liào']]
     }
 
@@ -276,7 +278,9 @@ def test_pinyin(api_client, data_fixture):
 
     logger.info('updating row, the pinyin field')
     field_value = {
-        'solution_overrides': [0],
+        'format_revision': 1,
+        'rendered_solution': 'le',
+        'solution_overrides': [1],
         'solutions': [['le', 'liǎo', 'liào']]
     }
     response = api_client.patch(
@@ -290,7 +294,13 @@ def test_pinyin(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
 
 
-    assert response_row[f'field_{pinyin_field_id}'] == field_value
+    expected_output = {
+        'format_revision': 1,
+        'rendered_solution': 'liǎo',
+        'solution_overrides': [1],
+        'solutions': [['le', 'liǎo', 'liào']]
+    }
+    assert response_row[f'field_{pinyin_field_id}'] == expected_output
 
     # retrieve the row again, make sure the id on the pinyin field is correct
     # =======================================================================
@@ -306,7 +316,9 @@ def test_pinyin(api_client, data_fixture):
     # pprint.pprint(response_row) 
 
     expected_field_value = {
-        'solution_overrides': [0],
+        'format_revision': 1,
+        'rendered_solution': 'liǎo',
+        'solution_overrides': [1],
         'solutions': [['le', 'liǎo', 'liào']]
     }
 
@@ -348,9 +360,10 @@ def test_pinyin(api_client, data_fixture):
     assert response.status_code == HTTP_200_OK
     logger.debug(f'response after switching to tone numbers: {pprint.pformat(response_row)}')
     
-    # TODO: add this assert back, after the celery-based mass update is put in again
     expected_output = {
-        'solution_overrides': [],
+        'format_revision': 1,
+        'rendered_solution': 'le5',
+        'solution_overrides': [0],
         'solutions': [['le5', 'liao3', 'liao4']]
     }    
     assert response_row[f'field_{pinyin_field_id}'] == expected_output
@@ -372,7 +385,9 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row)
 
     expected_pinyin = {
-        'solution_overrides': [],
+        'format_revision': 1,
+        'rendered_solution': 'mei2you3',
+        'solution_overrides': [0],
         'solutions': [['mei2you3']]
     }
     assert response_row[f'field_{pinyin_field_id}'] == expected_pinyin
