@@ -36,7 +36,12 @@ export default {
             v-on:click="select_romanization_alternative(solution_index, romanization_index)" 
             v-for="(romanization, romanization_index) in solution" 
             >
-              <span class="chinese_romanization_alternative background-color--gray" :class="{ 'background-color--orange': value.solution_overrides[solution_index] == romanization_index }">{{ romanization }}</span>
+              <span 
+                class="chinese_romanization_alternative" 
+                :class="{ 
+                    'background-color--blue': value.solution_overrides[solution_index] == romanization_index,
+                    'background-color--light-gray': value.solution_overrides[solution_index] != romanization_index }"
+                    >{{ romanization }}</span>
         </span>
         </div>
       </div>
