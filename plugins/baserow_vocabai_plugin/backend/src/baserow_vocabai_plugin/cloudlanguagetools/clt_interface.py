@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 manager = cloudlanguagetools.servicemanager.ServiceManager() 
 manager.configure_default()
 
+def reload_manager():
+    global manager
+    manager = cloudlanguagetools.servicemanager.ServiceManager() 
+    manager.configure_default()
+
 def get_servicemanager():
     return manager
 
