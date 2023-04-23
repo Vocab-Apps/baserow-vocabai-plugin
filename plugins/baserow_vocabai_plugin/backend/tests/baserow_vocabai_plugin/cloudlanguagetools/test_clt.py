@@ -284,9 +284,10 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row) 
 
     expected_output = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'le',
         'solution_overrides': [0],
+        'word_list': ['了'],
         'solutions': [['le', 'liǎo', 'liào']]
     }
 
@@ -298,9 +299,10 @@ def test_pinyin(api_client, data_fixture):
 
     logger.info('updating row, the pinyin field')
     field_value = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'le',
         'solution_overrides': [1],
+        'word_list': ['了'],
         'solutions': [['le', 'liǎo', 'liào']]
     }
     response = api_client.patch(
@@ -315,9 +317,10 @@ def test_pinyin(api_client, data_fixture):
 
 
     expected_output = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'liǎo',
         'solution_overrides': [1],
+        'word_list': ['了'],
         'solutions': [['le', 'liǎo', 'liào']]
     }
     assert response_row[f'field_{pinyin_field_id}'] == expected_output
@@ -336,9 +339,10 @@ def test_pinyin(api_client, data_fixture):
     # pprint.pprint(response_row) 
 
     expected_field_value = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'liǎo',
         'solution_overrides': [1],
+        'word_list': ['了'],
         'solutions': [['le', 'liǎo', 'liào']]
     }
 
@@ -381,9 +385,10 @@ def test_pinyin(api_client, data_fixture):
     logger.debug(f'response after switching to tone numbers: {pprint.pformat(response_row)}')
     
     expected_output = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'le5',
         'solution_overrides': [0],
+        'word_list': ['了'],
         'solutions': [['le5', 'liao3', 'liao4']]
     }    
     assert response_row[f'field_{pinyin_field_id}'] == expected_output
@@ -405,9 +410,10 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row)
 
     expected_pinyin = {
-        'format_revision': 1,
+        'format_revision': 2,
         'rendered_solution': 'mei2you3',
         'solution_overrides': [0],
+        'word_list': ['没有'],
         'solutions': [['mei2you3']]
     }
     assert response_row[f'field_{pinyin_field_id}'] == expected_pinyin

@@ -140,20 +140,17 @@ def get_dictionary_lookup(text, lookup_id, usage_user_id):
 
 
 def get_pinyin(text, tone_numbers, spaces, corrections=[]):
-    romanization_solution = manager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
-    return format_chinese_romanization_result(romanization_solution)
+    result = manager.get_pinyin(text, tone_numbers, spaces, corrections=corrections)
+    return enhance_chinese_romanization_result(result)
 
 def get_jyutping(text, tone_numbers, spaces, corrections=[]):
-    romanization_solution =  manager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)
-    return format_chinese_romanization_result(romanization_solution)
+    result =  manager.get_jyutping(text, tone_numbers, spaces, corrections=corrections)
+    return enhance_chinese_romanization_result(result)
 
-def format_chinese_romanization_result(solution):
-    result = {
-        'format_revision': 1, # may need to evolve this format
-        'rendered_solution': ' '.join(word[0] for word in solution),
-        'solution_overrides': [0] * len(solution),
-        'solutions': solution
-    }
+def enhance_chinese_romanization_result(result):
+    result['format_revision'] = 2
+    result['rendered_solution'] = ' '.join(word[0] for word in result['solutions'])
+    result['solution_overrides'] = [0] * len(result['solutions'])
     return result
  
 def update_rendered_solution(romanization):
