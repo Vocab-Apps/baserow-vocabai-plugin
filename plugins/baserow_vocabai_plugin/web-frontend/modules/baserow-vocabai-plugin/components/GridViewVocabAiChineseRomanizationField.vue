@@ -29,8 +29,8 @@ export default {
       :class="{ editing: editing }"
       @contextmenu="stopContextIfEditing($event)"
     >
-      <div v-if="!editing && value" class="grid-field-text">{{ value.rendered_solution }}</div>
-      <div v-else class="dropdown dropdown--floating dropdown--floating">
+      <div v-if="value" class="grid-field-text">{{ value.rendered_solution }}</div>
+      <div v-if="editing && value" class="dropdown dropdown--floating dropdown--floating">
         <table>
           <tr v-for="(solution, solution_index) in value.solutions">
             <td>{{ value.word_list[solution_index] }}</td>
