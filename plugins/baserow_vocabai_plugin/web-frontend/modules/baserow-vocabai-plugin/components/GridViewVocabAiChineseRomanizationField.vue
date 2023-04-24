@@ -31,6 +31,7 @@ export default {
     >
       <div v-if="value" class="grid-field-text">{{ value.rendered_solution }}</div>
       <div v-if="editing && value" class="dropdown dropdown--floating dropdown--floating">
+        <div class="dropdown__items" style="width: 100%;">
         <table>
           <tr v-for="(solution, solution_index) in value.solutions">
             <td>{{ value.word_list[solution_index] }}</td>
@@ -50,6 +51,7 @@ export default {
               </td>
             </tr>
         </table>
+        </div>
       </div>
     </div>
   </template>
