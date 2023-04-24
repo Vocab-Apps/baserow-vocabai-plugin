@@ -10,7 +10,7 @@ from baserow.contrib.database.views.handler import ViewHandler
 
 from baserow.contrib.database.fields.dependencies.models import FieldDependency
 
-from baserow.core.models import GROUP_USER_PERMISSION_ADMIN, GroupUser
+from baserow.core.models import WORKSPACE_USER_PERMISSION_ADMIN, WorkspaceUser
 
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField, ChineseRomanizationField, CHOICE_PINYIN, CHOICE_JYUTPING
 
@@ -97,14 +97,14 @@ class TransformationFieldType(FieldType):
         """get the user_id that this usage will be associated with"""
 
         # find the admin in the group
-        group = field.table.database.group
+        workspace = field.table.database.workspace
 
-        admin_users = GroupUser.objects.filter(group_id=group.id, permissions=GROUP_USER_PERMISSION_ADMIN)
+        admin_users = WorkspaceUser.objects.filter(workspace_id=workspace.id, permissions=WORKSPACE_USER_PERMISSION_ADMIN)
         for admin_user in admin_users:
             logger.info(f'admin_user: {admin_user.user}')
             return admin_user.user.id
 
-        logger.error(f'admin user not found in group {group} group.id: {group.id}')
+        logger.error(f'admin user not found in group {group} workspace.id: {workspace.id}')
         return None
 
     def process_transformation(self, field, starting_row):

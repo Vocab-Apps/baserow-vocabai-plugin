@@ -44,7 +44,7 @@ def iterate_row_id_buckets(table_id):
 
     # first, collect all row IDs
     base_queryset = Table.objects
-    table = base_queryset.select_related("database__group").get(id=table_id)
+    table = base_queryset.select_related("database__workspace").get(id=table_id)
     # https://docs.djangoproject.com/en/4.0/ref/models/querysets/
     table_model = table.get_model()
     row_id_list = []
@@ -63,7 +63,7 @@ def iterate_row_id_buckets(table_id):
 def process_row_id_bucket_iterate_rows(table_id, row_id_list):
 
     base_queryset = Table.objects
-    table = base_queryset.select_related("database__group").get(id=table_id)
+    table = base_queryset.select_related("database__workspace").get(id=table_id)
     # logger.info(f'table: {table}')
 
     table_model = table.get_model()
@@ -235,7 +235,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from ..fields.vocabai_models import VocabAiUsage, USAGE_PERIOD_MONTHLY, USAGE_PERIOD_DAILY
-from baserow.core.models import GroupUser
+from baserow.core.models import WorkspaceUser
 from baserow.contrib.database.models import Database
 from baserow.contrib.database.table.models import Table
 
@@ -267,17 +267,17 @@ def collect_user_data():
             logger.info(f'usage: {usage} characters: {usage.characters} period: {usage.period} period_time: {usage.period_time}')
 
         # collect number of groups, tables, rows
-        # need to locate GroupUser instances
-        group_user_list = GroupUser.objects.filter(user=user)
+        # need to locate WorkspaceUser instances
+        group_user_list = WorkspaceUser.objects.filter(user=user)
         group_count = 0
         database_count = 0
         table_count = 0
         row_count = 0
         for group_user in group_user_list:
-            logger.info(f'group_user: {group_user} group: {group_user.group}')
+            logger.info(f'group_user: {group_user} workspace: {group_user.workspace}')
             group_count += 1
             # find all the databases in that group
-            database_list = Database.objects.filter(group=group_user.group)
+            database_list = Database.objects.filter(workspace=group_user.workspace)
             for database in database_list:
                 logger.info(f'database: {database}')
                 database_count += 1
