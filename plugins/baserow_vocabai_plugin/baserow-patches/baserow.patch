@@ -1,5 +1,5 @@
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
-index 131ad6562..d059a4d64 100755
+index 1901c46b8..8e2b20560 100755
 --- a/backend/docker/docker-entrypoint.sh
 +++ b/backend/docker/docker-entrypoint.sh
 @@ -346,6 +346,11 @@ case "$1" in
@@ -15,7 +15,7 @@ index 131ad6562..d059a4d64 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index d887fa50c..bcd3a3c7d 100644
+index 5399b749a..a5537a6b5 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -6,6 +6,7 @@ from decimal import Decimal
@@ -145,7 +145,7 @@ index 08099307e..74a201a7a 100644
        extend(config, ctx) {
          config.node = { fs: 'empty' }
 diff --git a/web-frontend/package.json b/web-frontend/package.json
-index e57b79bfa..54c2835cd 100644
+index 415885e85..20a491c28 100644
 --- a/web-frontend/package.json
 +++ b/web-frontend/package.json
 @@ -46,7 +46,8 @@
