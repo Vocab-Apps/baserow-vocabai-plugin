@@ -30,6 +30,18 @@
       </Dropdown>      
     </div>    
 
+    <div class="control">
+      <div class="control__elements">
+        <Checkbox v-model="values.tone_numbers">Tone Numbers</Checkbox>
+      </div>
+    </div>
+
+    <div class="control">
+      <div class="control__elements">
+        <Checkbox v-model="values.spaces">Spaces between characters</Checkbox>
+      </div>
+    </div>    
+
   </div>
 </template>
 
@@ -48,7 +60,7 @@ export default {
   },    
   data() {
     return {
-      allowedValues: ['source_field_id', 'transformation'],
+      allowedValues: ['source_field_id', 'transformation', 'tone_numbers', 'spaces'],
       values: {
         source_field_id: '',
         transformation: '',
