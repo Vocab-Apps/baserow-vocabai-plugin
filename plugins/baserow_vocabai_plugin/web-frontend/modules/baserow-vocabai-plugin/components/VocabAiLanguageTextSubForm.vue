@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="control">
-
+      <label class="control__label control__label--small">
+          Select Language
+      </label>
       <Dropdown
         v-model="values.language"
         @input="languageSelected"

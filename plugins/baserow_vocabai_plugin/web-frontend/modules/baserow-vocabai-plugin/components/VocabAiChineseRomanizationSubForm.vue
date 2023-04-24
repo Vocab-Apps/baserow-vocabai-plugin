@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="control">
-
+      <label class="control__label control__label--small">
+          Select the source field
+      </label>
       <Dropdown
         v-model="values.source_field_id"
         @input="sourceFieldSelected"
@@ -17,6 +19,9 @@
     </div>
 
     <div class="control">
+      <label class="control__label control__label--small">
+          Select transformation type
+        </label>      
       <Dropdown
         v-model="values.transformation"
       >

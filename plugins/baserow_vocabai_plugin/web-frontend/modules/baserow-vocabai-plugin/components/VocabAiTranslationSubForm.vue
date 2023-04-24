@@ -1,7 +1,9 @@
 <template>
   <div>
     <div class="control">
-
+      <label class="control__label control__label--small">
+          Select Source Field
+      </label>
       <Dropdown
         v-model="values.source_field_id"
         @input="sourceFieldSelected"
@@ -17,6 +19,9 @@
     </div>
 
     <div class="control">
+      <label class="control__label control__label--small">
+          Select Language to translate to
+      </label>      
       <Dropdown
         v-model="values.target_language"
         @input="languageSelected"
@@ -32,6 +37,9 @@
     </div>
 
     <div class="control">
+      <label class="control__label control__label--small">
+          Select Translation Service
+      </label>      
       <Dropdown
         v-model="values.service"
         @input="translationServiceSelected"
