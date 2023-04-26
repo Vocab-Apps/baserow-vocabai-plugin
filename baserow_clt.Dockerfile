@@ -11,4 +11,4 @@ RUN wget https://github.com/festvox/flite/archive/refs/tags/v2.2.tar.gz && tar x
 RUN . /baserow/venv/bin/activate && pip3 install sentry-sdk==1.9.8 && pip3 cache purge
 RUN . /baserow/venv/bin/activate && pip3 install clt_wenlin==1.0 && pip3 cache purge
 RUN . /baserow/venv/bin/activate && pip3 install clt_requirements==0.8 && pip3 cache purge
-RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==5.3 && pip3 cache purge
+RUN . /baserow/venv/bin/activate && pip3 install cloudlanguagetools==5.4 && pip3 cache purge
