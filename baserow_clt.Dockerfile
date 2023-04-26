@@ -1,5 +1,5 @@
-# docker build -t lucwastiaux/baserow-clt:1.16.0-5.3-a -f baserow_clt.Dockerfile .
-# docker push lucwastiaux/baserow-clt:1.16.0-5.3-a
+# docker build -t lucwastiaux/baserow-clt:1.16.0-5.4-a -f baserow_clt.Dockerfile .
+# docker push lucwastiaux/baserow-clt:1.16.0-5.4-a
 
 FROM baserow/baserow:1.16.0
 
