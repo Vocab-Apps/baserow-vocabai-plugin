@@ -579,6 +579,15 @@ class ChineseRomanizationFieldType(TransformationFieldType):
             result =  clt_interface.get_jyutping(source_value, field.tone_numbers, field.spaces)
         return result
 
+    def get_export_value(
+        self, value, field_object, rich_value = False
+    ):
+        logger.info('get_export_value')
+
+        if value != None:
+            return value['rendered_solution']
+        return value
+
     def row_of_dependency_updated(
         self,
         field,
