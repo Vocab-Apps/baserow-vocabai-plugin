@@ -163,10 +163,10 @@ index cc869578c..3627a8000 100644
  }
  
 diff --git a/web-frontend/modules/core/components/BaserowLogo.vue b/web-frontend/modules/core/components/BaserowLogo.vue
-index 007e67893..b6c94c311 100644
+index 007e67893..809eefdd6 100644
 --- a/web-frontend/modules/core/components/BaserowLogo.vue
 +++ b/web-frontend/modules/core/components/BaserowLogo.vue
-@@ -1,13 +1,12 @@
+@@ -1,13 +1,13 @@
  <template>
    <a
 -    href="https://baserow.io"
@@ -181,6 +181,7 @@ index 007e67893..b6c94c311 100644
 -      alt="Baserow - open source no-code database tool and Airtable alternative"
 +      src="@baserow/modules/core/static/img/vocabai_logo.png"
 +      alt="Vocab.Ai - the Language Learning Spreadsheet"
++      style="width: 110px;"
      />
    </a>
  </template>
