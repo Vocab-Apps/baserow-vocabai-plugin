@@ -144,6 +144,19 @@ index 08099307e..74a201a7a 100644
      build: {
        extend(config, ctx) {
          config.node = { fs: 'empty' }
+diff --git a/web-frontend/modules/core/components/auth/Login.vue b/web-frontend/modules/core/components/auth/Login.vue
+index 3ccd915de..f0c353240 100644
+--- a/web-frontend/modules/core/components/auth/Login.vue
++++ b/web-frontend/modules/core/components/auth/Login.vue
+@@ -3,7 +3,7 @@
+     <div v-if="displayHeader">
+       <div class="auth__logo">
+         <nuxt-link :to="{ name: 'index' }">
+-          <img src="@baserow/modules/core/static/img/logo.svg" alt="" />
++          <img src="@baserow/modules/core/static/img/vocabai_banner.png" alt="" />
+         </nuxt-link>
+       </div>
+       <div class="auth__head">
 diff --git a/web-frontend/package.json b/web-frontend/package.json
 index 415885e85..20a491c28 100644
 --- a/web-frontend/package.json
