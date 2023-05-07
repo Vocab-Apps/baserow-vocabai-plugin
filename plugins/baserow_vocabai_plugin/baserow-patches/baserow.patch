@@ -199,7 +199,7 @@ index 3ccd915de..f0c353240 100644
        </div>
        <div class="auth__head">
 diff --git a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
-index 81c82f567..a5cd0dc1e 100644
+index 81c82f567..139e881c0 100644
 --- a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
 +++ b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
 @@ -1,61 +1,13 @@
@@ -210,6 +210,10 @@ index 81c82f567..a5cd0dc1e 100644
      <p class="dashboard__help-description">
 -      {{ $t('dashboard.alertText') }}
 +      Introducing <b>Vocab.Ai</b> - The revolutionary language learning spreadsheet designed to supercharge your vocabulary and sentence mastery!
++      <br/>
++      Need help ? <a href="https://lucw.medium.com/unlock-the-power-of-pinyin-vocab-ais-edc5db83a1a9" target="_blank">Chinese and Pinyin tutorial</a>
++      <br/>
++      <i>note: Vocab.Ai is based on open-source database <a href="https://baserow.io" target="_blank">Baserow</a></i>
      </p>
 -    <a
 -      href="https://gitlab.com/bramw/baserow"
@@ -263,10 +267,6 @@ index 81c82f567..a5cd0dc1e 100644
 -    >
 -      <i class="fab fa-linkedin"></i>
 -    </a>
-+    <p> class="dashboard__help-description">
-+      <a href="https://lucw.medium.com/unlock-the-power-of-pinyin-vocab-ais-edc5db83a1a9" target="_blank">Chinese and Pinyin tutorial</a>
-+    </p>
-+    <i>note: Vocab.Ai is based on open-source database <a href="https://baserow.io" target="_blank">Baserow</a></i>
    </div>
  </template>
  
