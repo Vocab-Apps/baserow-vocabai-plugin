@@ -198,6 +198,91 @@ index 3ccd915de..f0c353240 100644
          </nuxt-link>
        </div>
        <div class="auth__head">
+diff --git a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
+index 81c82f567..a5cd0dc1e 100644
+--- a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
++++ b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
+@@ -1,61 +1,13 @@
+ <template>
+   <div class="dashboard__help">
+-    <div class="dashboard__help-title">{{ $t('dashboard.alertTitle') }}</div>
++    <img src="@baserow/modules/core/static/img/vocabai_banner.png" alt="" style="height: 80px;"/>
+     <p class="dashboard__help-description">
+-      {{ $t('dashboard.alertText') }}
++      Introducing <b>Vocab.Ai</b> - The revolutionary language learning spreadsheet designed to supercharge your vocabulary and sentence mastery!
+     </p>
+-    <a
+-      href="https://gitlab.com/bramw/baserow"
+-      target="_blank"
+-      rel="noopener noreferrer"
+-      class="button button--primary dashboard__help-button"
+-    >
+-      {{ $t('dashboard.starOnGitlab') }}
+-      <i class="fab fa-gitlab"></i>
+-    </a>
+-    <a
+-      v-tooltip="$t('dashboard.shareOnTwitter')"
+-      :href="
+-        'https://twitter.com/intent/tweet?url=https://baserow.io' +
+-        '&hashtags=opensource,nocode,database,baserow&text=' +
+-        encodeURI($t('dashboard.tweetContent'))
+-      "
+-      target="_blank"
+-      rel="noopener noreferrer"
+-      class="button button--primary dashboard__help-button"
+-    >
+-      <i class="fab fa-twitter"></i>
+-    </a>
+-    <a
+-      v-tooltip="$t('dashboard.shareOnReddit')"
+-      :href="
+-        'https://www.reddit.com/submit?url=https://baserow.io&title=' +
+-        encodeURI($t('dashboard.redditTitle'))
+-      "
+-      target="_blank"
+-      rel="noopener noreferrer"
+-      class="button button--primary dashboard__help-button"
+-    >
+-      <i class="fab fa-reddit"></i>
+-    </a>
+-    <a
+-      v-tooltip="$t('dashboard.shareOnFacebook')"
+-      href="https://www.facebook.com/sharer/sharer.php?u=https://baserow.io"
+-      target="_blank"
+-      rel="noopener noreferrer"
+-      class="button button--primary dashboard__help-button"
+-    >
+-      <i class="fab fa-facebook"></i>
+-    </a>
+-    <a
+-      v-tooltip="$t('dashboard.shareOnLinkedIn')"
+-      href="https://www.linkedin.com/sharing/share-offsite/?url=https://baserow.io"
+-      target="_blank"
+-      rel="noopener noreferrer"
+-      class="button button--primary dashboard__help-button"
+-    >
+-      <i class="fab fa-linkedin"></i>
+-    </a>
++    <p> class="dashboard__help-description">
++      <a href="https://lucw.medium.com/unlock-the-power-of-pinyin-vocab-ais-edc5db83a1a9" target="_blank">Chinese and Pinyin tutorial</a>
++    </p>
++    <i>note: Vocab.Ai is based on open-source database <a href="https://baserow.io" target="_blank">Baserow</a></i>
+   </div>
+ </template>
+ 
+diff --git a/web-frontend/modules/core/head.js b/web-frontend/modules/core/head.js
+index 30ccc7024..29713cb65 100644
+--- a/web-frontend/modules/core/head.js
++++ b/web-frontend/modules/core/head.js
+@@ -1,6 +1,6 @@
+ export default {
+-  title: 'Baserow',
+-  titleTemplate: '%s // Baserow',
++  title: 'Vocab.Ai',
++  titleTemplate: '%s // Vocab.Ai',
+   meta: [
+     { charset: 'utf-8' },
+     {
 diff --git a/web-frontend/package.json b/web-frontend/package.json
 index 415885e85..20a491c28 100644
 --- a/web-frontend/package.json
