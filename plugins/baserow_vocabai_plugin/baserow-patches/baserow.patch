@@ -144,6 +144,46 @@ index 08099307e..74a201a7a 100644
      build: {
        extend(config, ctx) {
          config.node = { fs: 'empty' }
+diff --git a/web-frontend/modules/core/assets/scss/components/auth.scss b/web-frontend/modules/core/assets/scss/components/auth.scss
+index cc869578c..3627a8000 100644
+--- a/web-frontend/modules/core/assets/scss/components/auth.scss
++++ b/web-frontend/modules/core/assets/scss/components/auth.scss
+@@ -12,11 +12,10 @@
+ }
+ 
+ .auth__logo {
+-  height: 16px;
+-  margin-bottom: 48px;
++  margin-bottom: 20px;
+ 
+   & img {
+-    height: 100%;
++    width: 100%;
+   }
+ }
+ 
+diff --git a/web-frontend/modules/core/components/BaserowLogo.vue b/web-frontend/modules/core/components/BaserowLogo.vue
+index 007e67893..b6c94c311 100644
+--- a/web-frontend/modules/core/components/BaserowLogo.vue
++++ b/web-frontend/modules/core/components/BaserowLogo.vue
+@@ -1,13 +1,12 @@
+ <template>
+   <a
+-    href="https://baserow.io"
++    href="https://app.vocab.ai"
+     target="_blank"
+-    title="Baserow - open source no-code database tool and Airtable alternative"
++    title="Vocab.Ai - the Language Learning Spreadsheet"
+   >
+     <img
+-      height="14"
+-      src="@baserow/modules/core/static/img/logo.svg"
+-      alt="Baserow - open source no-code database tool and Airtable alternative"
++      src="@baserow/modules/core/static/img/vocabai_logo.png"
++      alt="Vocab.Ai - the Language Learning Spreadsheet"
+     />
+   </a>
+ </template>
 diff --git a/web-frontend/modules/core/components/auth/Login.vue b/web-frontend/modules/core/components/auth/Login.vue
 index 3ccd915de..f0c353240 100644
 --- a/web-frontend/modules/core/components/auth/Login.vue

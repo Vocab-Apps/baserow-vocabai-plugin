@@ -28,3 +28,4 @@ cd /baserow && patch -u -p1 -i $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/basero
 
 # copy logo
 cp $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/graphics/vocabai_banner_1_1040px.png /baserow/web-frontend/modules/core/static/img/vocabai_banner.png
+cp $BASEROW_PLUGIN_DIR/baserow_vocabai_plugin/graphics/vocabai_logo_300px.png /baserow/web-frontend/modules/core/static/img/vocabai_logo.png
