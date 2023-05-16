@@ -17,6 +17,15 @@ export default {
       // we need this to ensure we're working on a deep copy
       this.copy = JSON.parse(JSON.stringify(this.value));
     },
+    onClick() {
+      // start edit mode
+      if (!this.editing) {
+        this.edit(null, event)
+      } else {
+        // cancel edit in progress
+        this.cancel();
+      }
+    }
   }
 }
 </script>
@@ -29,7 +38,7 @@ export default {
       :class="{ editing: editing }"
       @contextmenu="stopContextIfEditing($event)"
     >
-      <div v-if="value" class="grid-field-text">{{ value.rendered_solution }}</div>
+      <div v-if="value" class="grid-field-text" @click="onClick()">{{ value.rendered_solution }}</div>
       <div v-if="editing && value" class="dropdown dropdown--floating dropdown--floating">
         <div class="dropdown__items" style="width: 100%;">
         <table>
