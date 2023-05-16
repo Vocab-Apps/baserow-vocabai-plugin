@@ -582,9 +582,7 @@ class ChineseRomanizationFieldType(TransformationFieldType):
     def get_export_value(
         self, value, field_object, rich_value = False
     ):
-        logger.info('get_export_value')
-
-        if value != None:
+        if value != None and value != '':
             return value['rendered_solution']
         return value
 
