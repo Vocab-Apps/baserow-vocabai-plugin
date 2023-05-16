@@ -225,4 +225,14 @@ export class ChineseRomanizationFieldType extends FieldType {
     return 'string'
   }  
 
+  prepareValueForCopy(field, value) {
+    if (value === undefined || 
+        value === null || 
+        value.rendered_solution === undefined ||
+        value.rendered_solution === null) {
+      return ''
+    }
+    return value.rendered_solution;
+  }  
+
 }
