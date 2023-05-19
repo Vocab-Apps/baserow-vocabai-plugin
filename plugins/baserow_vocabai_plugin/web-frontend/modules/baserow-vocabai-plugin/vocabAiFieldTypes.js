@@ -53,6 +53,10 @@ export class LanguageFieldType extends FieldType {
     return 'string'
   }  
 
+  getCanImport() {
+    return true
+  }
+
 }
 
 export class TranslationFieldType extends FieldType {
