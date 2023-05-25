@@ -5,6 +5,7 @@
 		}
 	],
 	"settings": {
+		"python.defaultInterpreterPath": "/home/luc/python-env/baserow-vocabai-plugin/bin/python",
 		"python.analysis.extraPaths": [
 			"/home/luc/python/baserow/backend/src"
 		]
