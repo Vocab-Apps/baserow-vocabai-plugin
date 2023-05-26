@@ -1,5 +1,5 @@
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
-index 1901c46b8..8e2b20560 100755
+index 855c35a56..2b4906e2b 100755
 --- a/backend/docker/docker-entrypoint.sh
 +++ b/backend/docker/docker-entrypoint.sh
 @@ -346,6 +346,11 @@ case "$1" in
@@ -15,19 +15,19 @@ index 1901c46b8..8e2b20560 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 5399b749a..a5537a6b5 100644
+index 3b52211ca..69c185b4e 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
-@@ -6,6 +6,7 @@ from decimal import Decimal
+@@ -8,6 +8,7 @@ from decimal import Decimal
  from ipaddress import ip_network
  from pathlib import Path
  from urllib.parse import urljoin, urlparse
 +import pprint
  
- import dj_database_url
- from celery.schedules import crontab
-@@ -28,6 +29,43 @@ class Everything(object):
- if "*" in FEATURE_FLAGS:
+ from django.core.exceptions import ImproperlyConfigured
+ 
+@@ -40,6 +41,43 @@ class Everything(object):
+ if "*" in FEATURE_FLAGS or "pytest" in sys.modules:
      FEATURE_FLAGS = Everything()
  
 +# sentry setup
@@ -70,7 +70,7 @@ index 5399b749a..a5537a6b5 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -152,6 +190,8 @@ CELERY_TASK_ROUTES = {
+@@ -171,6 +209,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
@@ -80,10 +80,10 @@ index 5399b749a..a5537a6b5 100644
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
-index facb25de7..53a86d2d7 100755
+index f6324daf7..04909df9f 100755
 --- a/supervisor/default_baserow_env.sh
 +++ b/supervisor/default_baserow_env.sh
-@@ -74,6 +74,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
+@@ -71,6 +71,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
  export BASEROW_WEB_FRONTEND_STARTUP_COMMAND="${BASEROW_WEB_FRONTEND_STARTUP_COMMAND:-$DEFAULT_WEB_FRONTEND_STARTUP_COMMAND}"
  export BASEROW_BACKEND_STARTUP_COMMAND="${BASEROW_BACKEND_STARTUP_COMMAND:-$DEFAULT_BACKEND_STARTUP_COMMAND}"
  export BASEROW_CELERY_WORKER_STARTUP_COMMAND="${BASEROW_CELERY_WORKER_STARTUP_COMMAND:-$DEFAULT_CELERY_WORKER_STARTUP_COMMAND}"
@@ -116,18 +116,10 @@ index 0856cd2fc..a2d9f7918 100644
  user=%(ENV_DOCKER_USER)s
  directory=/baserow/backend
 diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
-index 08099307e..74a201a7a 100644
+index 11cb717a6..aeeb9ce17 100644
 --- a/web-frontend/config/nuxt.config.base.js
 +++ b/web-frontend/config/nuxt.config.base.js
-@@ -26,6 +26,7 @@ export default function (
-     base + '/modules/database/module.js',
-     premiumBase + '/modules/baserow_premium/module.js',
-     enterpriseBase + '/modules/baserow_enterprise/module.js',
-+    '@nuxtjs/sentry'
-   ]
- 
-   const featureFlags = getFeatureFlags()
-@@ -37,6 +38,16 @@ export default function (
+@@ -41,6 +41,16 @@ export default function (
    const modules = baseModules.concat(additionalModules)
    return {
      modules,
@@ -199,7 +191,7 @@ index 3ccd915de..f0c353240 100644
        </div>
        <div class="auth__head">
 diff --git a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
-index 81c82f567..139e881c0 100644
+index ff58e6dbd..139e881c0 100644
 --- a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
 +++ b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
 @@ -1,61 +1,13 @@
@@ -216,7 +208,7 @@ index 81c82f567..139e881c0 100644
 +      <i>note: Vocab.Ai is based on open-source database <a href="https://baserow.io" target="_blank">Baserow</a></i>
      </p>
 -    <a
--      href="https://gitlab.com/bramw/baserow"
+-      href="https://gitlab.com/baserow/baserow"
 -      target="_blank"
 -      rel="noopener noreferrer"
 -      class="button button--primary dashboard__help-button"
@@ -284,25 +276,25 @@ index 30ccc7024..29713cb65 100644
      { charset: 'utf-8' },
      {
 diff --git a/web-frontend/package.json b/web-frontend/package.json
-index 415885e85..20a491c28 100644
+index ae481ea82..8a1804950 100644
 --- a/web-frontend/package.json
 +++ b/web-frontend/package.json
-@@ -46,7 +46,8 @@
-     "uuid": "^8.3.2",
-     "vue-chartjs": "^3.5.1",
-     "vuejs-datepicker": "^1.6.2",
--    "vuelidate": "^0.7.5"
-+    "vuelidate": "^0.7.5",
+@@ -54,7 +54,8 @@
+     "uuid": "9.0.0",
+     "vue-chartjs": "4.1.2",
+     "vuejs-datepicker": "1.6.2",
+-    "vuelidate": "0.7.7"
++    "vuelidate": "0.7.7",
 +    "@nuxtjs/sentry": "^6.0.0"
    },
    "devDependencies": {
-     "@nuxtjs/eslint-config": "^6.0.1",
-@@ -79,6 +80,7 @@
+     "@babel/core": "7.21.4",
+@@ -89,6 +90,7 @@
+     "prettier": "2.8.7",
      "stylelint": "^13.13.1",
      "stylelint-config-standard": "^22.0.0",
-     "stylelint-webpack-plugin": "^3.0.1",
--    "vue-jest": "^3.0.3"
-+    "vue-jest": "^3.0.3",
+-    "stylelint-webpack-plugin": "^3.0.1"
++    "stylelint-webpack-plugin": "^3.0.1",
 +    "@sentry/webpack-plugin": "^1.19.0"
    }
  }
