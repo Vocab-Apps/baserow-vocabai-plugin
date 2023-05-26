@@ -85,7 +85,7 @@ def test_quotas(api_client, data_fixture):
         translation_result_str = clt_interface.get_translation('yoyo3', 'fr', 'en', 'TestServiceB', user.id)
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_add_language_field(api_client, data_fixture):
     use_clt_test_services()
 
@@ -186,7 +186,7 @@ def test_add_language_field(api_client, data_fixture):
 
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db(transaction=True)
 def test_pinyin(api_client, data_fixture):
     use_clt_real_services()
 
