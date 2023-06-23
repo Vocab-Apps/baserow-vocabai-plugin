@@ -148,13 +148,17 @@ def get_jyutping(text, tone_numbers, spaces, corrections=[]):
     return enhance_chinese_romanization_result(result)
 
 def enhance_chinese_romanization_result(result):
-    result['format_revision'] = 2
+    result['format_revision'] = 3
     result['rendered_solution'] = ' '.join(word[0] for word in result['solutions'])
     result['solution_overrides'] = [0] * len(result['solutions'])
     return result
  
 def update_rendered_solution(romanization):
     if romanization != None and romanization != {}:
-        rendered_solution = ' '.join(word[word_index] for word, word_index in zip(romanization['solutions'], romanization['solution_overrides']))
+        rendered_solution_override = romanization.get('rendered_solution_override', None)
+        if rendered_solution_override:
+            rendered_solution = rendered_solution_override
+        else:
+            rendered_solution = ' '.join(word[word_index] for word, word_index in zip(romanization['solutions'], romanization['solution_overrides']))
         romanization['rendered_solution'] = rendered_solution
     return romanization

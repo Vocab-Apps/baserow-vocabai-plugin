@@ -197,6 +197,8 @@ def test_pinyin(api_client, data_fixture):
     logger.info(f'starting test_pinyin')
     user, token = data_fixture.create_user_and_token()
 
+    ROMANIZATION_FORMAT_REVISION = 3
+
     # update language data first
     # clt_interface.update_language_data()
 
@@ -284,7 +286,7 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row) 
 
     expected_output = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'le',
         'solution_overrides': [0],
         'word_list': ['了'],
@@ -299,7 +301,7 @@ def test_pinyin(api_client, data_fixture):
 
     logger.info('updating row, the pinyin field')
     field_value = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'le',
         'solution_overrides': [1],
         'word_list': ['了'],
@@ -317,7 +319,7 @@ def test_pinyin(api_client, data_fixture):
 
 
     expected_output = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'liǎo',
         'solution_overrides': [1],
         'word_list': ['了'],
@@ -339,7 +341,7 @@ def test_pinyin(api_client, data_fixture):
     # pprint.pprint(response_row) 
 
     expected_field_value = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'liǎo',
         'solution_overrides': [1],
         'word_list': ['了'],
@@ -347,6 +349,71 @@ def test_pinyin(api_client, data_fixture):
     }
 
     assert response_row[f'field_{pinyin_field_id}'] == expected_field_value
+
+
+    # set a rendered_solution_override
+    # ================================
+
+    logger.info('updating row, the pinyin field')
+    field_value = {
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
+        'rendered_solution': 'le',
+        'rendered_solution_override': 'liao 3', # doesn't have to be valid pinyin
+        'solution_overrides': [1],
+        'word_list': ['了'],
+        'solutions': [['le', 'liǎo', 'liào']]
+    }
+    response = api_client.patch(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        {f"field_{pinyin_field_id}": field_value},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    logger.info(pprint.pformat(response_row))
+    assert response.status_code == HTTP_200_OK
+
+
+    expected_output = {
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
+        'rendered_solution': 'liao 3',
+        'rendered_solution_override': 'liao 3',
+        'solution_overrides': [1],
+        'word_list': ['了'],
+        'solutions': [['le', 'liǎo', 'liào']]
+    }
+    assert response_row[f'field_{pinyin_field_id}'] == expected_output
+
+    # remove the rendered_solution_override
+    # ================================
+
+    logger.info('updating row, the pinyin field')
+    field_value = {
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
+        'rendered_solution': 'le',
+        'solution_overrides': [1],
+        'word_list': ['了'],
+        'solutions': [['le', 'liǎo', 'liào']]
+    }
+    response = api_client.patch(
+        reverse("api:database:rows:item", kwargs={"table_id": table_id, 'row_id': table_row_id}),
+        {f"field_{pinyin_field_id}": field_value},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_row = response.json()
+    logger.info(pprint.pformat(response_row))
+    assert response.status_code == HTTP_200_OK
+
+
+    expected_output = {
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
+        'rendered_solution': 'liǎo',
+        'solution_overrides': [1],
+        'word_list': ['了'],
+        'solutions': [['le', 'liǎo', 'liào']]
+    }
+    assert response_row[f'field_{pinyin_field_id}'] == expected_output
 
     # modify pinyin derived field, use tone numbers
     # =============================================
@@ -385,7 +452,7 @@ def test_pinyin(api_client, data_fixture):
     logger.debug(f'response after switching to tone numbers: {pprint.pformat(response_row)}')
     
     expected_output = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'le5',
         'solution_overrides': [0],
         'word_list': ['了'],
@@ -410,7 +477,7 @@ def test_pinyin(api_client, data_fixture):
     pprint.pprint(response_row)
 
     expected_pinyin = {
-        'format_revision': 2,
+        'format_revision': ROMANIZATION_FORMAT_REVISION,
         'rendered_solution': 'mei2you3',
         'solution_overrides': [0],
         'word_list': ['没有'],
