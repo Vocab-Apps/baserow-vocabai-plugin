@@ -11,7 +11,7 @@ def setup(settings):
         value['engine'] = 'some custom engine'
     """
 
-    # prior to baserow 1.17.2, the following fix was required
+    # prior to baserow 1.18.0, the following fix was required
     # see here: https://community.baserow.io/t/when-running-pytest-on-a-plugin-runtimeerror-model-class-baserow-contrib-builder-pages-models-page-doesnt-declare-an-explicit-app-label-and-isnt-in-an-application-in-installed-apps/2548/2
     # if "pytest" in sys.modules:
     #     settings.INSTALLED_APPS += ["baserow.contrib.builder"]
