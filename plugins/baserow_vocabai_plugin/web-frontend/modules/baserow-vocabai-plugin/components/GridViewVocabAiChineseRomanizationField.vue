@@ -9,6 +9,10 @@ export default {
     {
       console.log(`selecting ${word_index}, ${alternative_index}`);
       this.copy.solution_overrides[word_index] = alternative_index;
+      // remove rendered_solution_override, if it's present
+      if (this.copy.rendered_solution_override) {
+        delete this.copy.rendered_solution_override;
+      }
       // this will trigger the http patch request to update the backend
       this.save();
     },

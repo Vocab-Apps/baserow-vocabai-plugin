@@ -81,7 +81,9 @@
      * changed or formatted here if necessary.
      */
     beforeSave(value) {
-      return value
+        // edited value should be stored in rendered_solution_override
+        value.rendered_solution_override = value.rendered_solution;
+        return value
     },
     /**
      * Method that is called after saving the value. This can be overridden in the
