@@ -15,7 +15,7 @@ index 3885b79aa..5dd58b3f7 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 4c7837d3c..0aa02e397 100644
+index 4c7837d3c..1ce924cc4 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -8,6 +8,7 @@ from decimal import Decimal
@@ -39,7 +39,7 @@ index 4c7837d3c..0aa02e397 100644
 +
 +def traces_sampler(sampling_context):
 +    # this one appears very frequently
-+    if sampling_context.get('asgi_scope', {}).get('path', None) == '/_health/':
++    if sampling_context.get('asgi_scope', {}).get('path', None) in ['/_health/', '/api/_health/']:
 +        return 0.001
 +        
 +    # the following are quite frequent
