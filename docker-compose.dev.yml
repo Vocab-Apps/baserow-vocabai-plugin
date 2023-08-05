@@ -32,6 +32,8 @@ services:
       # BASEROW_AMOUNT_OF_WORKERS: 2
       BASEROW_USER_STATS_TOKEN: ${BASEROW_USER_STATS_TOKEN}
       BASEROW_USER_STATS_URL: ${BASEROW_USER_STATS_URL}
+      CONVERTKIT_API_KEY: ${CONVERTKIT_API_KEY}
+      CONVERTKIT_API_SECRET: ${CONVERTKIT_API_SECRET}
     volumes:
       - baserow_data:/baserow/data
       - ./plugins/baserow_vocabai_plugin/backend:/baserow/data/plugins/baserow_vocabai_plugin/backend

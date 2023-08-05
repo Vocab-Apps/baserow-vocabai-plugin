@@ -241,13 +241,14 @@ from baserow.contrib.database.table.models import Table
 
 def subscribe_convertkit(user_record_list):
     convertkit_api_key = os.environ.get('CONVERTKIT_API_KEY', None)
+    convertkit_api_secret = os.environ.get('CONVERTKIT_API_SECRET', None)
     convertkit_subscribe = os.environ.get('CONVERTKIT_SUBSCRIBE', 'NO') == 'YES'
     CONVERTKIT_THROTTLE_REQUESTS_SLEEP = 0.5
     CONVERTKIT_REQUEST_TIMEOUT=120
     CONVERTKIT_TAG_ID = 4024166 # vocabai_user
 
-    if convertkit_api_key == None:
-        logger.error(f'CONVERTKIT_API_KEY must be set in order to subscribe users to ConvertKit')
+    if convertkit_api_key == None or convertkit_api_secret == None:
+        logger.error(f'CONVERTKIT_API_KEY, CONVERTKIT_API_SECRET must be set in order to subscribe users to ConvertKit')
         return
 
     # ensure all users are subscribed to convertkit
@@ -255,11 +256,11 @@ def subscribe_convertkit(user_record_list):
     try:
         # build list of emails already subscribed
         # =======================================
-        url = f'https://api.convertkit.com/v3/tags/{CONVERTKIT_TAG_ID}/subscriptions?api_secret={convertkit_api_key}'
+        url = f'https://api.convertkit.com/v3/tags/{CONVERTKIT_TAG_ID}/subscriptions?api_secret={convertkit_api_secret}'
         response = requests.get(url, timeout=CONVERTKIT_REQUEST_TIMEOUT)
         time.sleep(CONVERTKIT_THROTTLE_REQUESTS_SLEEP)
         response.raise_for_status()
-        data = response.data()
+        data = response.json()
         current_page = data['page']
         total_pages = data['total_pages']        
         email_set = set()
@@ -268,7 +269,7 @@ def subscribe_convertkit(user_record_list):
         # go through all the pages
         while current_page < total_pages:
             next_page = current_page + 1
-            url = f'https://api.convertkit.com/v3/tags/{CONVERTKIT_TAG_ID}/subscriptions?api_secret={convertkit_api_key}&page={next_page}'
+            url = f'https://api.convertkit.com/v3/tags/{CONVERTKIT_TAG_ID}/subscriptions?api_secret={convertkit_api_secret}&page={next_page}'
             response = requests.get(url, timeout=CONVERTKIT_REQUEST_TIMEOUT)
             response.raise_for_status()
             # throttle
