@@ -484,3 +484,126 @@ def test_pinyin(api_client, data_fixture):
         'solutions': [['mei2you3']]
     }
     assert response_row[f'field_{pinyin_field_id}'] == expected_pinyin
+
+
+@pytest.mark.django_db(transaction=True)
+def test_create_multiple_rows(api_client, data_fixture):
+    use_clt_test_services()
+
+    # CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py -k test_create_multiple_rows
+    assert os.environ['CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES'] == 'yes'
+
+    user, token = data_fixture.create_user_and_token()
+
+    # update language data first
+    clt_interface.update_language_data()    
+
+    response = api_client.get(reverse('api:baserow_vocabai_plugin:translation-options'),HTTP_AUTHORIZATION=f"JWT {token}",)
+    assert response.status_code == HTTP_200_OK
+    pprint.pprint(response.data)    
+
+    # create database
+    # ===============
+
+    database = data_fixture.create_database_application(user=user)
+    pprint.pprint(database)
+
+    # create table 
+    # ============
+
+    url = reverse(
+        "api:database:tables:async_create", kwargs={"database_id": database.id}
+    )
+    response = api_client.post(
+        url, {"name": "test_table_1"}, format="json", HTTP_AUTHORIZATION=f"JWT {token}"
+    )
+    assert response.status_code == HTTP_200_OK
+    json_response = response.json()
+    table_id = json_response['id']
+    pprint.pprint(json_response)
+
+
+    # create french language field
+    # ============================
+
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {"name": "french", "type": "language_text", "language": "fr"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_json = response.json()
+    print('response from creating french language field:')
+    pprint.pprint(response_json)
+    french_field_id = response_json['id']
+    assert response.status_code == HTTP_200_OK
+
+    # create english translation field
+    # ================================
+
+    response = api_client.post(
+        reverse("api:database:fields:list", kwargs={"table_id": table_id}),
+        {"name": "english_trans", "type": "translation", "source_field_id": french_field_id, 'target_language': 'en', 'service': 'TestServiceA'},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_json = response.json()
+    english_trans_field_id = response_json['id']
+    # pprint.pprint(response_json)
+    assert response.status_code == HTTP_200_OK    
+
+
+    # batch create multiple rows
+    # ==========================
+    url = f'/api/database/rows/table/{table_id}/batch/'
+    rows = [
+        {f"field_{french_field_id}": "Bonjour"},
+        {f"field_{french_field_id}": "Au Revoir"},
+    ]
+    response = api_client.post(
+        url,
+        {'items': rows},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_data = response.json()
+    assert response.status_code == HTTP_200_OK, response.content
+    print(f'*** response from batch create: {response_data}')
+
+    english_trans_field_row_0 = response_data['items'][0][f'field_{english_trans_field_id}']
+    english_trans_field_row_1 = response_data['items'][1][f'field_{english_trans_field_id}']
+    assert json.loads(english_trans_field_row_0) == {
+        "text": "Bonjour", "from_language_key": "fr", "to_language_key": 'en'
+    }
+    assert json.loads(english_trans_field_row_1) == {
+        "text": "Au Revoir", "from_language_key": "fr", "to_language_key": 'en'
+    }
+
+    row_id_0 = response_data['items'][0]['id']
+    row_id_1 = response_data['items'][1]['id']
+
+    # now, update those rows
+    # ======================
+    url = f'/api/database/rows/table/{table_id}/batch/'
+    rows = [
+        {'id': row_id_0, f"field_{french_field_id}": "Merci"},
+        {'id': row_id_1, f"field_{french_field_id}": "Non"},
+    ]
+    response = api_client.patch(
+        url,
+        {'items': rows},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    response_data = response.json()
+    assert response.status_code == HTTP_200_OK, response.content
+    print(f'*** response from batch update: {response_data}')
+
+    english_trans_field_row_0 = response_data['items'][0][f'field_{english_trans_field_id}']
+    english_trans_field_row_1 = response_data['items'][1][f'field_{english_trans_field_id}']
+    assert json.loads(english_trans_field_row_0) == {
+        "text": "Merci", "from_language_key": "fr", "to_language_key": 'en'
+    }
+    assert json.loads(english_trans_field_row_1) == {
+        "text": "Non", "from_language_key": "fr", "to_language_key": 'en'
+    }    
