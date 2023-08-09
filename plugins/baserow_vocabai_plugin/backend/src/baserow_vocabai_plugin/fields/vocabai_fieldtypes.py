@@ -9,6 +9,7 @@ from baserow.contrib.database.fields.models import Field
 from baserow.contrib.database.views.handler import ViewHandler
 
 from baserow.contrib.database.fields.dependencies.models import FieldDependency
+from baserow.contrib.database.table.models import TableModelQuerySet
 
 from baserow.core.models import WORKSPACE_USER_PERMISSION_ADMIN, WorkspaceUser
 
@@ -111,9 +112,14 @@ class TransformationFieldType(FieldType):
         source_internal_field_name = f'field_{field.source_field.id}'
         target_internal_field_name = f'field_{field.id}'
 
-        if isinstance(starting_row, list):
+        if isinstance(starting_row, TableModelQuerySet):
+            # if starting_row is TableModelQuerySet (when creating multiple rows in a batch), we want to iterate over its TableModel objects
             row_list = starting_row
+        elif isinstance(starting_row, list):
+            # if we have a list, it's a list of TableModels, iterate over them
+            row_list = starting_row            
         else:
+            # we got a single TableModel, transform it into a list of one element
             row_list = [starting_row]
 
         rows_to_bulk_update = []
