@@ -5,13 +5,19 @@ from baserow.contrib.database.fields.field_cache import FieldCache
 from rest_framework import serializers
 
 from baserow.contrib.database.fields.registries import FieldType
-from baserow.contrib.database.fields.models import Field
+from baserow.contrib.database.fields.models import Field, TextField
 from baserow.contrib.database.views.handler import ViewHandler
 
 from baserow.contrib.database.fields.dependencies.models import FieldDependency
 from baserow.contrib.database.table.models import TableModelQuerySet
 
 from baserow.core.models import WORKSPACE_USER_PERMISSION_ADMIN, WorkspaceUser
+
+from baserow.contrib.database.fields.field_filters import (
+    contains_filter,
+    contains_word_filter,
+)
+from baserow.contrib.database.formula import BaserowFormulaType, BaserowFormulaTextType
 
 from .vocabai_models import TranslationField, TransliterationField, LanguageField, DictionaryLookupField, ChineseRomanizationField, CHOICE_PINYIN, CHOICE_JYUTPING
 
@@ -152,6 +158,25 @@ class TransformationFieldType(FieldType):
         via_path_to_starting_table):    
         # don't do anything
         pass
+
+    # Lets this field type work with the contains view filter
+    def contains_query(self, *args):
+        return contains_filter(*args)
+
+    # Lets this field type work with the contains word view filter
+    def contains_word_query(self, *args):
+        return contains_word_filter(*args)
+
+    # Lets this field type be referenced (and treated like it is text) by the formula
+    # field:
+    def to_baserow_formula_type(self, field) -> BaserowFormulaType:
+        return BaserowFormulaTextType(nullable=True)
+
+    def from_baserow_formula_type(
+            self, formula_type: BaserowFormulaTextType
+    ) -> TextField:
+        # Pretend to be a text field from the formula systems perspective
+        return TextField()    
 
 class TranslationFieldType(TransformationFieldType):
     type = "translation"
