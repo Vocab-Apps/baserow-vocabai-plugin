@@ -1,7 +1,7 @@
-# docker build -t lucwastiaux/baserow-clt:1.18.0-6.2-b -f baserow_clt.Dockerfile .
-# docker push lucwastiaux/baserow-clt:1.18.0-6.2-b
+# docker build -t lucwastiaux/baserow-clt:1.19.1-6.2-b -f baserow_clt.Dockerfile .
+# docker push lucwastiaux/baserow-clt:1.19.1-6.2-b
 
-FROM baserow/baserow:1.18.0
+FROM baserow/baserow:1.19.1
 
 # install packages first
 RUN apt-get update -y && apt-get install -y libasound2 build-essential wget procps
