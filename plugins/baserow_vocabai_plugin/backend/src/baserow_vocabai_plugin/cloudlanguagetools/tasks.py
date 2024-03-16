@@ -307,13 +307,6 @@ def subscribe_convertkit(user_record_list):
 def collect_user_data():
     logger.info('running task collect_user_data')
 
-    base_url = os.environ.get('BASEROW_USER_STATS_URL', None)
-    token = os.environ.get('BASEROW_USER_STATS_TOKEN', None)
-
-    if base_url == None or token == None:
-        logger.error(f'BASEROW_USER_STATS_URL, BASEROW_USER_STATS_TOKEN must be set in order to collect user data')
-        return
-
     user_list = User.objects.all()
 
     user_record_list = []
@@ -355,7 +348,6 @@ def collect_user_data():
                     row_count += table.get_model(field_ids=[]).objects.count()
 
         logger.info(f'user stats: last_login: {last_login} databases: {database_count} tables: {table_count} rows: {row_count}')
-        logger.info(f'BASEROW_USER_STATS_URL: {base_url}')
 
         user_record_list.append({
             'username': username,
@@ -370,71 +362,6 @@ def collect_user_data():
     # ================================================
     subscribe_convertkit(user_record_list)
 
-    # upload to baserow
-    # =================
-
-    # retrieve records first
-    response = requests.get(
-        f"{base_url}/?user_field_names=true",
-        headers={
-            "Authorization": f"Token {token}"
-        }
-    )    
-    
-    records = response.json()['results']
-    baserow_username_to_id_map = {}
-    for record in records:
-        baserow_username_to_id_map[record['username']] = record['id']
-
-
-    # determine which records need to be inserted or updated
-    record_updates = []
-    record_inserts = []
-    for user_record in user_record_list:
-        username = user_record['username']
-        if username in baserow_username_to_id_map:
-            # update
-            update_record = user_record
-            update_record['id'] = baserow_username_to_id_map[username]
-            record_updates.append(update_record)
-        else:
-            # insert
-            record_inserts.append(user_record)
-    
-    # do inserts
-    if len(record_inserts) > 0:
-        # pprint.pprint(record_inserts)
-        response = requests.post(
-            f"{base_url}/batch/?user_field_names=true",
-            headers={
-                "Authorization": f"Token {token}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "items": record_inserts
-            }
-        )    
-        if response.status_code != 200:
-            logger.error(response.content)
-
-    # do updates
-    if len(record_updates) > 0:
-        # pprint.pprint(record_updates)
-        response = requests.patch(
-            f"{base_url}/batch/?user_field_names=true",
-            headers={
-                "Authorization": f"Token {token}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "items": record_updates
-            }
-        )    
-        if response.status_code != 200:
-            logger.error(response.content)    
-
-
-    #pprint.pprint(records)
 
 
 
