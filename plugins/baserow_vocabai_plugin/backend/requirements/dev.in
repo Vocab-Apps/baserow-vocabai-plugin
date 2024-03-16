@@ -11,7 +11,7 @@ freezegun==1.1.0
 responses==0.13.4
 watchdog==2.1.4
 argh==0.26.2
-black==21.7b0
+black
 pyinstrument==4.0.3
 pyfakefs==4.5.5
 pytest-xdist==2.3.0
