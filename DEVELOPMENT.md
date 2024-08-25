@@ -86,7 +86,10 @@ cookiecutter gl:bramw/baserow --directory plugin-boilerplate
 then, compare contents in `baserow-plugin-1-13-2` with existing plugin files.
 
 ```
+# compare top level
 diff --color=always -ur baserow-vocabai-plugin baserow-plugin-1-15-2   | less -r
+# compare plugin directory
+diff --color=always -ur baserow-vocabai-plugin/plugins/baserow_vocabai_plugin/ baserow-plugin-1-26-1/plugins/baserow_plugin_1_26_1/   | less -r
 ```
 
 * mass-replace `1.12.0` with `1.19.1`
