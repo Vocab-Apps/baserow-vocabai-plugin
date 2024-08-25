@@ -1,0 +1,1 @@
+alias run_docker_interactive='docker compose -f docker-compose.dev.yml exec baserow-vocabai-plugin /baserow.sh backend-cmd bash -c bash'
