@@ -1,8 +1,8 @@
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
-index 3a2a4c361..ad1d10f12 100755
+index 96d351071..318c03638 100755
 --- a/backend/docker/docker-entrypoint.sh
 +++ b/backend/docker/docker-entrypoint.sh
-@@ -351,6 +351,11 @@ case "$1" in
+@@ -384,6 +384,11 @@ case "$1" in
        echo "Running celery export worker healthcheck..."
        exec celery -A baserow inspect ping -d "export-worker@$HOSTNAME" -t 10 "${@:2}"
      ;;
@@ -15,7 +15,7 @@ index 3a2a4c361..ad1d10f12 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 6fe417e2c..b7982409f 100644
+index 26341bb3c..78c29c952 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -8,6 +8,7 @@ from decimal import Decimal
@@ -26,7 +26,7 @@ index 6fe417e2c..b7982409f 100644
  
  from django.core.exceptions import ImproperlyConfigured
  
-@@ -40,6 +41,43 @@ class Everything(object):
+@@ -44,6 +45,43 @@ class Everything(object):
  if "*" in FEATURE_FLAGS or "pytest" in sys.modules:
      FEATURE_FLAGS = Everything()
  
@@ -70,7 +70,7 @@ index 6fe417e2c..b7982409f 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -172,6 +210,8 @@ CELERY_TASK_ROUTES = {
+@@ -175,6 +213,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
@@ -80,10 +80,10 @@ index 6fe417e2c..b7982409f 100644
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
-index f6324daf7..04909df9f 100755
+index d27ba5d42..c4f4ac16b 100755
 --- a/supervisor/default_baserow_env.sh
 +++ b/supervisor/default_baserow_env.sh
-@@ -71,6 +71,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
+@@ -70,6 +70,7 @@ export DJANGO_SETTINGS_MODULE=${DJANGO_SETTINGS_MODULE:-$DEFAULT_DJANGO_SETTINGS
  export BASEROW_WEB_FRONTEND_STARTUP_COMMAND="${BASEROW_WEB_FRONTEND_STARTUP_COMMAND:-$DEFAULT_WEB_FRONTEND_STARTUP_COMMAND}"
  export BASEROW_BACKEND_STARTUP_COMMAND="${BASEROW_BACKEND_STARTUP_COMMAND:-$DEFAULT_BACKEND_STARTUP_COMMAND}"
  export BASEROW_CELERY_WORKER_STARTUP_COMMAND="${BASEROW_CELERY_WORKER_STARTUP_COMMAND:-$DEFAULT_CELERY_WORKER_STARTUP_COMMAND}"
@@ -116,17 +116,27 @@ index 0856cd2fc..a2d9f7918 100644
  user=%(ENV_DOCKER_USER)s
  directory=/baserow/backend
 diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
-index 5afc15a39..552cd7d82 100644
+index fbad0570f..7fcec702a 100644
 --- a/web-frontend/config/nuxt.config.base.js
 +++ b/web-frontend/config/nuxt.config.base.js
-@@ -42,6 +42,16 @@ export default function (
-   const modules = baseModules.concat(additionalModules)
-   return {
+@@ -35,17 +35,19 @@ export default function (
      modules,
-+    sentry: {
+     buildModules: ['@nuxtjs/stylelint-module'],
+     sentry: {
+-      clientIntegrations: {
+-        Dedupe: {},
+-        ExtraErrorData: {},
+-        RewriteFrames: {},
+-        ReportingObserver: null,
 +      dsn: 'https://33f709910b214ed282315bd91344bae0@o968582.ingest.sentry.io/6742673',
 +      config: {
-+      },
+       },
+       clientConfig: {
+         attachProps: true,
+         logErrors: true,
+-      },
+-    },
++      },      
 +      publishRelease: {
 +        authToken: '9b89e612331511edbbd996b6a33f5072',
 +        org: 'language-tools',
@@ -137,7 +147,7 @@ index 5afc15a39..552cd7d82 100644
        extend(config, ctx) {
          config.node = { fs: 'empty' }
 diff --git a/web-frontend/modules/core/assets/scss/components/auth.scss b/web-frontend/modules/core/assets/scss/components/auth.scss
-index cc869578c..3627a8000 100644
+index 209e09580..2faf0e431 100644
 --- a/web-frontend/modules/core/assets/scss/components/auth.scss
 +++ b/web-frontend/modules/core/assets/scss/components/auth.scss
 @@ -12,11 +12,10 @@
@@ -154,11 +164,11 @@ index cc869578c..3627a8000 100644
    }
  }
  
-diff --git a/web-frontend/modules/core/components/BaserowLogo.vue b/web-frontend/modules/core/components/BaserowLogo.vue
-index 007e67893..809eefdd6 100644
---- a/web-frontend/modules/core/components/BaserowLogo.vue
-+++ b/web-frontend/modules/core/components/BaserowLogo.vue
-@@ -1,13 +1,13 @@
+diff --git a/web-frontend/modules/core/components/ExternalLinkBaserowLogo.vue b/web-frontend/modules/core/components/ExternalLinkBaserowLogo.vue
+index 5060281fa..aabcd5ac1 100644
+--- a/web-frontend/modules/core/components/ExternalLinkBaserowLogo.vue
++++ b/web-frontend/modules/core/components/ExternalLinkBaserowLogo.vue
+@@ -1,12 +1,13 @@
  <template>
    <a
 -    href="https://baserow.io"
@@ -167,34 +177,34 @@ index 007e67893..809eefdd6 100644
 -    title="Baserow - open source no-code database tool and Airtable alternative"
 +    title="Vocab.Ai - the Language Learning Spreadsheet"
    >
-     <img
+-    <Logo
 -      height="14"
--      src="@baserow/modules/core/static/img/logo.svg"
 -      alt="Baserow - open source no-code database tool and Airtable alternative"
++    <img
 +      src="@baserow/modules/core/static/img/vocabai_logo.png"
-+      alt="Vocab.Ai - the Language Learning Spreadsheet"
++      alt="Vocab Words - the Language Learning Spreadsheet"
 +      style="width: 110px;"
      />
    </a>
  </template>
 diff --git a/web-frontend/modules/core/components/auth/Login.vue b/web-frontend/modules/core/components/auth/Login.vue
-index 3ccd915de..f0c353240 100644
+index 5ef8733e8..0f38acc92 100644
 --- a/web-frontend/modules/core/components/auth/Login.vue
 +++ b/web-frontend/modules/core/components/auth/Login.vue
-@@ -3,7 +3,7 @@
-     <div v-if="displayHeader">
-       <div class="auth__logo">
-         <nuxt-link :to="{ name: 'index' }">
--          <img src="@baserow/modules/core/static/img/logo.svg" alt="" />
-+          <img src="@baserow/modules/core/static/img/vocabai_banner.png" alt="" />
-         </nuxt-link>
-       </div>
-       <div class="auth__head">
+@@ -6,7 +6,7 @@
+       <div v-if="displayHeader">
+         <div class="auth__logo">
+           <nuxt-link :to="{ name: 'index' }">
+-            <Logo />
++            <img src="@baserow/modules/core/static/img/vocabai_banner.png" alt="" />
+           </nuxt-link>
+         </div>
+         <div class="auth__head">
 diff --git a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
-index ff58e6dbd..139e881c0 100644
+index a5f3438f5..139e881c0 100644
 --- a/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
 +++ b/web-frontend/modules/core/components/dashboard/DashboardHelp.vue
-@@ -1,61 +1,13 @@
+@@ -1,65 +1,13 @@
  <template>
    <div class="dashboard__help">
 -    <div class="dashboard__help-title">{{ $t('dashboard.alertTitle') }}</div>
@@ -207,94 +217,75 @@ index ff58e6dbd..139e881c0 100644
 +      <br/>
 +      <i>note: Vocab.Ai is based on open-source database <a href="https://baserow.io" target="_blank">Baserow</a></i>
      </p>
--    <a
+-    <Button
+-      type="primary"
+-      icon="baserow-icon-gitlab"
+-      tag="a"
 -      href="https://gitlab.com/baserow/baserow"
 -      target="_blank"
 -      rel="noopener noreferrer"
--      class="button button--primary dashboard__help-button"
 -    >
 -      {{ $t('dashboard.starOnGitlab') }}
--      <i class="fab fa-gitlab"></i>
--    </a>
--    <a
+-    </Button>
+-    <Button
 -      v-tooltip="$t('dashboard.shareOnTwitter')"
--      :href="
--        'https://twitter.com/intent/tweet?url=https://baserow.io' +
--        '&hashtags=opensource,nocode,database,baserow&text=' +
--        encodeURI($t('dashboard.tweetContent'))
--      "
+-      type="primary"
+-      icon="baserow-icon-twitter"
+-      tag="a"
+-      :href="`https://twitter.com/intent/tweet?url=https://baserow.io&hashtags=opensource,nocode,database,baserow&text=${encodeURI(
+-        $t('dashboard.tweetContent')
+-      )}`"
 -      target="_blank"
 -      rel="noopener noreferrer"
--      class="button button--primary dashboard__help-button"
 -    >
--      <i class="fab fa-twitter"></i>
--    </a>
--    <a
+-    </Button>
+-    <Button
 -      v-tooltip="$t('dashboard.shareOnReddit')"
+-      type="primary"
+-      tag="a"
+-      icon="baserow-icon-reddit"
 -      :href="
 -        'https://www.reddit.com/submit?url=https://baserow.io&title=' +
 -        encodeURI($t('dashboard.redditTitle'))
 -      "
 -      target="_blank"
 -      rel="noopener noreferrer"
--      class="button button--primary dashboard__help-button"
 -    >
--      <i class="fab fa-reddit"></i>
--    </a>
--    <a
+-    </Button>
+-    <Button
 -      v-tooltip="$t('dashboard.shareOnFacebook')"
+-      type="primary"
+-      tag="a"
+-      icon="baserow-icon-facebook"
 -      href="https://www.facebook.com/sharer/sharer.php?u=https://baserow.io"
 -      target="_blank"
 -      rel="noopener noreferrer"
--      class="button button--primary dashboard__help-button"
 -    >
--      <i class="fab fa-facebook"></i>
--    </a>
--    <a
+-    </Button>
+-    <Button
 -      v-tooltip="$t('dashboard.shareOnLinkedIn')"
+-      type="primary"
+-      tag="a"
+-      icon="baserow-icon-linkedin"
 -      href="https://www.linkedin.com/sharing/share-offsite/?url=https://baserow.io"
 -      target="_blank"
 -      rel="noopener noreferrer"
 -      class="button button--primary dashboard__help-button"
 -    >
--      <i class="fab fa-linkedin"></i>
--    </a>
+-    </Button>
    </div>
  </template>
  
 diff --git a/web-frontend/modules/core/head.js b/web-frontend/modules/core/head.js
-index 30ccc7024..29713cb65 100644
+index 065c1e34e..5ba1f791b 100644
 --- a/web-frontend/modules/core/head.js
 +++ b/web-frontend/modules/core/head.js
 @@ -1,6 +1,6 @@
  export default {
 -  title: 'Baserow',
 -  titleTemplate: '%s // Baserow',
-+  title: 'Vocab.Ai',
-+  titleTemplate: '%s // Vocab.Ai',
++  title: 'Vocab Words',
++  titleTemplate: '%s // Vocab Words',
    meta: [
      { charset: 'utf-8' },
      {
-diff --git a/web-frontend/package.json b/web-frontend/package.json
-index aa449bdda..ff4c2cc85 100644
---- a/web-frontend/package.json
-+++ b/web-frontend/package.json
-@@ -65,7 +65,8 @@
-     "uuid": "9.0.0",
-     "vue-chartjs": "4.1.2",
-     "vuejs-datepicker": "1.6.2",
--    "vuelidate": "0.7.7"
-+    "vuelidate": "0.7.7",
-+    "@nuxtjs/sentry": "^6.0.0"
-   },
-   "devDependencies": {
-     "@babel/core": "7.21.4",
-@@ -100,6 +101,7 @@
-     "stylelint": "^13.13.1",
-     "stylelint-config-prettier": "^9.0.5",
-     "stylelint-config-standard": "^22.0.0",
--    "stylelint-webpack-plugin": "^3.0.1"
-+    "stylelint-webpack-plugin": "^3.0.1",
-+    "@sentry/webpack-plugin": "^1.19.0"
-   }
- }
