@@ -56,16 +56,18 @@ see ```plugins/baserow_vocabai_plugin/backend/build.sh```
 # Updating baserow-vocabai-patches
 get latest master
 ```
+cd ~/python/baserow-vocabai-patches
+git checkout master
 git fetch upstream
 git rebase upstream/master
 git push
 ```
-create persistent branch with the baserow release
+create persistent branch with the baserow release (assuming 1.19.1 is your target baserow release)
 ```
 git checkout -b baserow-1.19.1 1.19.1
 git push --set-upstream origin baserow-1.19.1
 ```
-now, create a new vocabai branch, which we'll rebase with the latest baserow
+now, create a new vocabai branch, which we'll rebase with the latest baserow (1.12.0 is the version we had the patch on previously, 1.19.1 is your baserow target release)
 ```
 git checkout baserow-vocabai-patch-1.12.0
 git checkout -b baserow-vocabai-patch-1.19.1
