@@ -48,5 +48,11 @@ services:
     # Open stdin and tty so when attaching key input works as expected.
     stdin_open: true
     tty: true
+    networks:
+      - ipv6-net
+networks:
+  ipv6-net:
+    enable_ipv6: true
+    driver: bridge
 volumes:
   baserow_data:
