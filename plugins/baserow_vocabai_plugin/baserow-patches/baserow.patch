@@ -15,7 +15,7 @@ index 96d351071..318c03638 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 26341bb3c..78c29c952 100644
+index 26341bb3c..96392800a 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -8,6 +8,7 @@ from decimal import Decimal
@@ -59,7 +59,7 @@ index 26341bb3c..78c29c952 100644
 +
 +sentry_sdk.init(
 +    dsn="https://f7a7fa7dfe5f412f852c3bfe2defa091@o968582.ingest.sentry.io/6742581",
-+    integrations=[DjangoIntegration(), CeleryIntegration()],
++    integrations=[DjangoIntegration(signals_spans=False, middleware_spans=False), CeleryIntegration()],
 +    send_default_pii=True,
 +    traces_sampler=traces_sampler,
 +)
