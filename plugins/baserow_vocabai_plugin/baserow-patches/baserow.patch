@@ -14,6 +14,19 @@ index 96d351071..318c03638 100755
      celery-beat)
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
+diff --git a/backend/pytest.ini b/backend/pytest.ini
+index e316a805f..92dd72cf7 100644
+--- a/backend/pytest.ini
++++ b/backend/pytest.ini
+@@ -1,7 +1,7 @@
+ [pytest]
+ DJANGO_SETTINGS_MODULE = baserow.config.settings.test
+ python_files = test_*.py
+-addopts = --disable-warnings
++addopts = --disable-warnings --reuse-db
+ env =
+     SECRET_KEY = test
+     BASEROW_JWT_SIGNING_KEY = test
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
 index 26341bb3c..c6fdd7d24 100644
 --- a/backend/src/baserow/config/settings/base.py
