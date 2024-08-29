@@ -15,7 +15,7 @@ index 96d351071..318c03638 100755
        # Delay the beat startup as there seems to be bug where the other celery workers
        # starting up interfere with or break the lock obtained by it. Without this the
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 26341bb3c..96392800a 100644
+index 26341bb3c..c6fdd7d24 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -8,6 +8,7 @@ from decimal import Decimal
@@ -79,6 +79,16 @@ index 26341bb3c..96392800a 100644
  }
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
+@@ -226,6 +266,9 @@ else:
+             "PASSWORD": os.getenv("DATABASE_PASSWORD", "baserow"),
+             "HOST": os.getenv("DATABASE_HOST", "db"),
+             "PORT": os.getenv("DATABASE_PORT", "5432"),
++            "TEST": {
++                "NAME": os.getenv("DATABASE_TEST_NAME", default="vocabai_words_test"),
++            },
+         }
+     }
+     if "DATABASE_OPTIONS" in os.environ:
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
 index d27ba5d42..c4f4ac16b 100755
 --- a/supervisor/default_baserow_env.sh
