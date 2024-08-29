@@ -1,5 +1,5 @@
 alias run_docker_interactive='docker compose -f docker-compose.dev.yml exec baserow-vocabai-plugin /baserow.sh backend-cmd bash -c bash'
-alias run_docker_container='docker compose -f docker-compose.dev.yml exec baserow-vocabai-plugin /baserow.sh backend-cmd bash -c bash'
+alias attach_docker_container='docker compose -f docker-compose.dev.yml exec baserow-vocabai-plugin /baserow.sh backend-cmd bash -c bash'
 alias run='docker compose -f docker-compose.dev.yml up'
 alias run_build='docker compose -f docker-compose.dev.yml up --build'
 alias log_tail='docker logs --since 1h -f baserow-vocabai-plugin'

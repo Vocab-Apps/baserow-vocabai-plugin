@@ -46,6 +46,10 @@ docker compose -f docker-compose.dev.yml exec -T baserow-vocabai-plugin /baserow
 ```
 docker compose -f docker-compose.dev.yml exec baserow-vocabai-plugin /baserow.sh backend-cmd bash -c bash
 cd /baserow/data/plugins/baserow_vocabai_plugin/backend/tests
+# we shouldn't need this, but for some reason the default docker compose setup doesn't export this variable
+export DATABASE_TEST_NAME=vocabai_words_test
+# make sure we re-use the database
+pytest --reuse-db
 pytest
 CLOUDLANGUAGETOOLS_CORE_TEST_SERVICES=yes pytest baserow_vocabai_plugin/cloudlanguagetools/test_clt.py
 ```
