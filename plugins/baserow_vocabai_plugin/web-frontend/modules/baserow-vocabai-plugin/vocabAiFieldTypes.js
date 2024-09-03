@@ -73,6 +73,12 @@ export class TranslationFieldType extends FieldType {
     return 'Translation'
   }
 
+  // field must be set as read-only, otherwise it won't get updated after a PATCH request
+  // https://community.baserow.io/t/custom-fields-in-my-plugin-after-upgrading-from-1-19-to-1-26-a-patch-request-doesnt-populate-derived-fields-anymore-i-suspect-a-front-end-issue/6003/4
+  getIsReadOnly() {
+    return true
+  }
+
   getFormComponent() {
     return VocabAiTranslationSubForm
   }
@@ -115,6 +121,10 @@ export class TransliterationFieldType extends FieldType {
   getName() {
     return 'Transliteration'
   }
+
+  getIsReadOnly() {
+    return true
+  }  
 
   getFormComponent() {
     return VocabAiTransliterationSubForm
@@ -159,6 +169,10 @@ export class DictionaryLookupFieldType extends FieldType {
     return 'Dictionary Lookup'
   }
 
+  getIsReadOnly() {
+    return true
+  }  
+
   getFormComponent() {
     return VocabAiDictionaryLookupSubForm
   }
@@ -201,6 +215,10 @@ export class ChineseRomanizationFieldType extends FieldType {
   getName() {
     return 'Chinese Romanization'
   }
+
+  getIsReadOnly() {
+    return true
+  }  
 
   getFormComponent() {
     return VocabAiChineseRomanizationSubForm
