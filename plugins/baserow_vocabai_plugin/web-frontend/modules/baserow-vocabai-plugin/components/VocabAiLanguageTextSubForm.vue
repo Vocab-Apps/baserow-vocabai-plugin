@@ -1,12 +1,15 @@
 <template>
   <div>
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select Language
-      </label>
+    <FormGroup
+      small-label
+      label="Select a Language"
+      class="margin-bottom-2"
+      required
+    >
       <Dropdown
         v-model="values.language"
         @input="languageSelected"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="language in languageList"
@@ -17,7 +20,8 @@
         ></DropdownItem>
       </Dropdown>
 
-    </div>
+    </FormGroup>
+
   </div>
 </template>
 
