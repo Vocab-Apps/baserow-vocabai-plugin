@@ -1,12 +1,17 @@
 <template>
   <div>
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select Source Field
-      </label>
+    
+    <FormGroup
+      small-label
+      label="Select Source Field"
+      class="margin-bottom-2"
+      required
+    >    
+    
       <Dropdown
         v-model="values.source_field_id"
         @input="sourceFieldSelected"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="field in tableFields"
@@ -16,15 +21,19 @@
           :icon="field.icon"
         ></DropdownItem>
       </Dropdown>
-    </div>
 
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select Language to translate to
-      </label>      
+    </FormGroup>
+
+    <FormGroup
+      small-label
+      label="Select Language to translate to"
+      class="margin-bottom-2"
+      required
+    >    
       <Dropdown
         v-model="values.target_language"
         @input="languageSelected"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="language in languageList"
@@ -34,15 +43,19 @@
           icon="font"
         ></DropdownItem>
       </Dropdown>      
-    </div>
+    </FormGroup>
 
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select Translation Service
-      </label>      
+    <FormGroup
+      small-label
+      label="Select Translation Service"
+      class="margin-bottom-2"
+      required
+    >    
+
       <Dropdown
         v-model="values.service"
         @input="translationServiceSelected"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="service in serviceList"
@@ -52,7 +65,7 @@
           icon="font"
         ></DropdownItem>
       </Dropdown>      
-    </div>    
+    </FormGroup>
 
   </div>
 </template>
