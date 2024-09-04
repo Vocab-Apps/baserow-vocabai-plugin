@@ -1,12 +1,17 @@
 <template>
   <div>
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select the source field
-      </label>
+
+    <FormGroup
+      small-label
+      label="Select Source Field"
+      class="margin-bottom-2"
+      required
+    >    
+
       <Dropdown
         v-model="values.source_field_id"
         @input="sourceFieldSelected"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="field in tableFields"
@@ -16,14 +21,19 @@
           :icon="field.icon"
         ></DropdownItem>
       </Dropdown>
-    </div>
+    </FormGroup>
 
-    <div class="control">
-      <label class="control__label control__label--small">
-          Select transformation type
-        </label>      
+
+    <FormGroup
+      small-label
+      label="Select transformation type"
+      class="margin-bottom-2"
+      required
+    >               
+
       <Dropdown
         v-model="values.transformation"
+        :fixed-items="true"
       >
         <DropdownItem
           v-for="option in transformations"
@@ -33,7 +43,7 @@
           icon="font"
         ></DropdownItem>
       </Dropdown>      
-    </div>    
+    </FormGroup>
 
     <div class="control">
       <div class="control__elements">
