@@ -45,17 +45,23 @@
       </Dropdown>      
     </FormGroup>
 
-    <div class="control">
-      <div class="control__elements">
-        <Checkbox v-model="values.tone_numbers">Tone Numbers</Checkbox>
-      </div>
-    </div>
+    <FormGroup
+      small-label
+      label="Tone Numbers"
+      class="margin-bottom-2"
+      required
+    >
+        <Checkbox v-model="values.tone_numbers">Enable tone numbers, instead of tone marks</Checkbox>
+    </FormGroup>
 
-    <div class="control">
-      <div class="control__elements">
-        <Checkbox v-model="values.spaces">Spaces between characters</Checkbox>
-      </div>
-    </div>    
+    <FormGroup
+      small-label  
+      label="Spaces between characters"
+      class="margin-bottom-2"
+      required
+    >
+        <Checkbox v-model="values.spaces">Add a space between each character</Checkbox>
+    </FormGroup>
 
   </div>
 </template>
