@@ -100,7 +100,7 @@ export default {
       return true
     },
     async sourceFieldSelected() {
-      console.log('source_field_id: ', this.values.source_field_id);
+      console.log('TranslationSubForm: sourceFieldSelected, source_field_id: ', this.values.source_field_id);
       const selectedField = this.$store.getters['field/get'](
           this.values.source_field_id
       );
