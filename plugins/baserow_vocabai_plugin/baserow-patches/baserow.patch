@@ -102,6 +102,19 @@ index 26341bb3c..c6fdd7d24 100644
          }
      }
      if "DATABASE_OPTIONS" in os.environ:
+diff --git a/backend/src/baserow/core/models.py b/backend/src/baserow/core/models.py
+index 9ccb2dc90..3d6a3c41b 100755
+--- a/backend/src/baserow/core/models.py
++++ b/backend/src/baserow/core/models.py
+@@ -208,7 +208,7 @@ class UserProfile(models.Model):
+     # TODO Remove null=True in a future release.
+     email_verified = models.BooleanField(null=True, default=False)
+     # TODO Remove null=True in a future release.
+-    completed_onboarding = models.BooleanField(null=True, default=False)
++    completed_onboarding = models.BooleanField(null=True, default=True)
+ 
+     def iat_before_last_password_change(self, iat: int) -> bool:
+         """
 diff --git a/supervisor/default_baserow_env.sh b/supervisor/default_baserow_env.sh
 index d27ba5d42..c4f4ac16b 100755
 --- a/supervisor/default_baserow_env.sh
