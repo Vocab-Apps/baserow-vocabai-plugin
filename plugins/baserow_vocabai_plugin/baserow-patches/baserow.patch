@@ -152,36 +152,17 @@ index 0856cd2fc..a2d9f7918 100644
  user=%(ENV_DOCKER_USER)s
  directory=/baserow/backend
 diff --git a/web-frontend/config/nuxt.config.base.js b/web-frontend/config/nuxt.config.base.js
-index fbad0570f..7fcec702a 100644
+index fbad0570f..9bbb00f7f 100644
 --- a/web-frontend/config/nuxt.config.base.js
 +++ b/web-frontend/config/nuxt.config.base.js
-@@ -35,17 +35,19 @@ export default function (
+@@ -35,6 +35,7 @@ export default function (
      modules,
      buildModules: ['@nuxtjs/stylelint-module'],
      sentry: {
--      clientIntegrations: {
--        Dedupe: {},
--        ExtraErrorData: {},
--        RewriteFrames: {},
--        ReportingObserver: null,
 +      dsn: 'https://33f709910b214ed282315bd91344bae0@o968582.ingest.sentry.io/6742673',
-+      config: {
-       },
-       clientConfig: {
-         attachProps: true,
-         logErrors: true,
--      },
--    },
-+      },      
-+      publishRelease: {
-+        authToken: '9b89e612331511edbbd996b6a33f5072',
-+        org: 'language-tools',
-+        project: 'baserow-vocabai-frontend',
-+      }      
-+    },    
-     build: {
-       extend(config, ctx) {
-         config.node = { fs: 'empty' }
+       clientIntegrations: {
+         Dedupe: {},
+         ExtraErrorData: {},
 diff --git a/web-frontend/modules/core/assets/scss/components/auth.scss b/web-frontend/modules/core/assets/scss/components/auth.scss
 index 209e09580..2faf0e431 100644
 --- a/web-frontend/modules/core/assets/scss/components/auth.scss
