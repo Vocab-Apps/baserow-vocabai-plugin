@@ -1,7 +1,7 @@
 # docker build -t lucwastiaux/baserow-clt:1.26.1-11.3.2-a -f baserow_clt.Dockerfile .
 # docker push lucwastiaux/baserow-clt:1.26.1-11.3.2-a
 
-ARG BASEROW_IMAGE_VERSION=1.26.1
+ARG BASEROW_IMAGE_VERSION=1.26.0
 FROM baserow/baserow:${BASEROW_IMAGE_VERSION}
 
 # arguments
