@@ -1,8 +1,9 @@
 # This a dev image for testing your plugin when installed into the Baserow all-in-one image
 
-
-ARG BASE_BASEROW_CLT_IMAGE=lucwastiaux/baserow-clt:1.26.1-11.3.2-a
-FROM ${BASE_BASEROW_CLT_IMAGE} as base
+# this base image should always get overriden by a specific version
+ARG BASE_BASEROW_CLT_IMAGE=lucwastiaux/baserow-clt:1.26.0-11.3.2-a
+FROM ${BASE_BASEROW_CLT_IMAGE} AS base
+FROM ${BASE_BASEROW_CLT_IMAGE}
 
 ARG PLUGIN_BUILD_UID
 ENV PLUGIN_BUILD_UID=${PLUGIN_BUILD_UID:-9999}
