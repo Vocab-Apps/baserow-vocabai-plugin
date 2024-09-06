@@ -10,7 +10,7 @@ git tag -a ${GIT_TAG} -m "version ${GIT_TAG}"
 git push origin ${GIT_TAG}
 
 # docker build
-. baserow_clt_versions.sh
+. ./baserow_clt_versions.sh
 docker build \
 --build-arg SENTRY_RELEASE=${SENTRY_RELEASE} \
 --build-arg BASE_BASEROW_CLT_IMAGE=${BASE_BASEROW_CLT_IMAGE} \
