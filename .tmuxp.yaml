@@ -5,12 +5,14 @@ shell_command_before:
   - cmd: source ~/secrets/cloudlanguagetools/cloudlanguagetools_core_secret.sh
   - cmd: source ~/secrets/vocab_words/dev.sh
   - cmd: source .bash_aliases
+  - cmd: clear
 windows:
 - window_name: docker
   focus: true
 - window_name: logs
 - window_name: logs_inspect
 - window_name: git
+- window_name: tests
 - window_name: patches
   panes:
     - shell_command: 
