@@ -1,0 +1,21 @@
+session_name: vocab-words
+start_directory: ./ # load session relative to config location (project root).
+shell_command_before:
+  - cmd: source env.dev.sh
+  - cmd: source ~/secrets/cloudlanguagetools/cloudlanguagetools_core_secret.sh
+  - cmd: source ~/secrets/vocab_words/dev.sh
+  - cmd: source .bash_aliases
+windows:
+- window_name: docker
+  focus: true
+- window_name: logs
+- window_name: logs_inspect
+- window_name: git
+- window_name: patches
+  panes:
+    - shell_command: 
+      - cd ~/python/baserow-vocabai-patches
+- window_name: baserow
+  panes:
+    - shell_command: 
+      - cd ~/python/baserow
