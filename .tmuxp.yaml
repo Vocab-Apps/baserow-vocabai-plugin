@@ -17,6 +17,8 @@ windows:
   panes:
     - shell_command: 
       - cd ~/python/baserow-vocabai-patches
+      - source .bash_aliases
+      - clear
 - window_name: baserow
   panes:
     - shell_command: 
