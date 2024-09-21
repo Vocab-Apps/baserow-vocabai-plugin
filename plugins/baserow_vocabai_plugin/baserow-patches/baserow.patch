@@ -1,3 +1,10 @@
+diff --git a/.bash_aliases b/.bash_aliases
+new file mode 100644
+index 000000000..6b9388548
+--- /dev/null
++++ b/.bash_aliases
+@@ -0,0 +1 @@
++alias regenerate_baserow_patch='git diff baserow-1.26.1..baserow-vocabai-patch-1.26.1 | sed "s:/:/:g" > ~/python/baserow-vocabai-plugin/plugins/baserow_vocabai_plugin/baserow-patches/baserow.patch'
 diff --git a/backend/docker/docker-entrypoint.sh b/backend/docker/docker-entrypoint.sh
 index 96d351071..318c03638 100755
 --- a/backend/docker/docker-entrypoint.sh
@@ -28,7 +35,7 @@ index e316a805f..92dd72cf7 100644
      SECRET_KEY = test
      BASEROW_JWT_SIGNING_KEY = test
 diff --git a/backend/src/baserow/config/settings/base.py b/backend/src/baserow/config/settings/base.py
-index 26341bb3c..c6fdd7d24 100644
+index 26341bb3c..e9dadf171 100644
 --- a/backend/src/baserow/config/settings/base.py
 +++ b/backend/src/baserow/config/settings/base.py
 @@ -8,6 +8,7 @@ from decimal import Decimal
@@ -39,7 +46,7 @@ index 26341bb3c..c6fdd7d24 100644
  
  from django.core.exceptions import ImproperlyConfigured
  
-@@ -44,6 +45,43 @@ class Everything(object):
+@@ -44,6 +45,47 @@ class Everything(object):
  if "*" in FEATURE_FLAGS or "pytest" in sys.modules:
      FEATURE_FLAGS = Everything()
  
@@ -62,13 +69,17 @@ index 26341bb3c..c6fdd7d24 100644
 +        'baserow.core.action.tasks.cleanup_old_actions',
 +        'baserow.core.trash.tasks.mark_old_trash_for_permanent_deletion',
 +        'baserow.core.trash.tasks.permanently_delete_marked_trash',
-+        'baserow.contrib.database.export.tasks.clean_up_old_jobs'
++        'baserow.contrib.database.export.tasks.clean_up_old_jobs',
++        'baserow.core.notifications.tasks.beat_send_instant_notifications_summary_by_email',
++        'baserow.core.notifications.tasks.singleton_send_instant_notifications_summary_by_email',
++        'baserow.contrib.database.search.tasks.async_update_tsvector_columns',
++        'baserow.ws.tasks.broadcast_to_permitted_users'
 +    ]:
-+        return 0.1
++        return 0.05
 +
 +    # if more information is needed about transactions, uncomment the following
 +    #pprint.pprint(sampling_context, width=2000, compact=True)
-+    return 1.0
++    return 0.5
 +
 +sentry_sdk.init(
 +    dsn="https://f7a7fa7dfe5f412f852c3bfe2defa091@o968582.ingest.sentry.io/6742581",
@@ -83,7 +94,7 @@ index 26341bb3c..c6fdd7d24 100644
  BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
  
  BASEROW_PLUGIN_DIR_PATH = Path(os.environ.get("BASEROW_PLUGIN_DIR", "/baserow/plugins"))
-@@ -175,6 +213,8 @@ CELERY_TASK_ROUTES = {
+@@ -175,6 +217,8 @@ CELERY_TASK_ROUTES = {
      "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
      "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
      "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
@@ -92,7 +103,7 @@ index 26341bb3c..c6fdd7d24 100644
  }
  CELERY_SOFT_TIME_LIMIT = 60 * 5  # 5 minutes
  CELERY_TIME_LIMIT = CELERY_SOFT_TIME_LIMIT + 60  # 60 seconds
-@@ -226,6 +266,9 @@ else:
+@@ -226,6 +270,9 @@ else:
              "PASSWORD": os.getenv("DATABASE_PASSWORD", "baserow"),
              "HOST": os.getenv("DATABASE_HOST", "db"),
              "PORT": os.getenv("DATABASE_PORT", "5432"),
